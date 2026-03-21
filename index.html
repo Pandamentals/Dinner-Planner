@@ -214,9 +214,9 @@
     .ing-remove-btn { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 0.9rem; padding: 4px 6px; border-radius: 5px; transition: color 0.15s; }
     .ing-remove-btn:hover { color: var(--danger); }
     .ing-add-row { display: flex; gap: 8px; margin-top: 4px; }
-    .ing-add-input { flex: 1; background: var(--surface2); border: 1px dashed var(--border); border-radius: 7px; padding: 8px 12px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.83rem; outline: none; transition: border-color 0.2s; }
-    .ing-add-input:focus { border-color: var(--accent2); border-style: solid; }
-    .ing-add-input::placeholder { color: var(--text-dim); }
+    .ing-add-textarea { flex: 1; background: var(--surface2); border: 1px dashed var(--border); border-radius: 7px; padding: 8px 12px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.83rem; outline: none; transition: border-color 0.2s; resize: vertical; min-height: 38px; max-height: 160px; line-height: 1.5; }
+    .ing-add-textarea:focus { border-color: var(--accent2); border-style: solid; }
+    .ing-add-textarea::placeholder { color: var(--text-dim); }
     .ing-add-btn { background: var(--surface2); border: 1px solid var(--border); color: var(--text-muted); border-radius: 7px; padding: 8px 12px; cursor: pointer; font-size: 0.85rem; transition: all 0.15s; }
     .ing-add-btn:hover { border-color: var(--accent2); color: var(--accent); }
     .parsing-state { display: flex; align-items: center; gap: 10px; padding: 16px; background: var(--surface2); border-radius: 8px; font-size: 0.85rem; color: var(--text-muted); }
@@ -647,7 +647,7 @@
     ingModalDinnerId=id;
     editingIngredients=d.ingredients?[...d.ingredients]:[];
     document.getElementById('ing-modal-title').textContent=d.name;
-    document.getElementById('ing-modal-sub').textContent='Add ingredients one at a time, or paste multiple lines';
+    document.getElementById('ing-modal-sub').textContent='One per line — paste a whole list at once';
     renderIngModalBody();
     document.getElementById('ing-modal').classList.add('open');
   }
@@ -661,9 +661,9 @@
           <input class="ing-edit-input" value="${esc(ing)}" onchange="updateIngredient(${i},this.value)" onblur="updateIngredient(${i},this.value)"/>
           <button class="ing-remove-btn" onclick="removeIngredient(${i})">\u2715</button>
         </div>`).join('')}
-      </div>`:`<div style="font-size:0.82rem;color:var(--text-dim);padding:4px 0 8px">No ingredients yet.<br><span style="font-size:0.75rem">Tip: paste multiple lines at once and hit Add All.</span></div>`}
+      </div>`:`<div style="font-size:0.82rem;color:var(--text-dim);padding:4px 0 8px">No ingredients yet.<br><span style="font-size:0.75rem">Paste a list — each line becomes one ingredient.</span></div>`}
       <div class="ing-add-row">
-        <input class="ing-add-input" id="ing-new-input" placeholder="e.g. 2 cups flour  (paste multiple lines for bulk add)" onkeydown="handleIngKeydown(event)"/>
+        <textarea class="ing-add-textarea" id="ing-new-input" rows="2" placeholder="One ingredient per line&#10;e.g.&#10;2 cups flour&#10;1 tsp salt" onkeydown="handleIngKeydown(event)"></textarea>
         <button class="ing-add-btn" onclick="addIngredientManual()">+ Add</button>
       </div>`;
     setTimeout(()=>document.getElementById('ing-new-input')?.focus(), 80);
@@ -671,7 +671,12 @@
   function updateIngredient(i,val) { editingIngredients[i]=val; }
   function removeIngredient(i) { editingIngredients.splice(i,1); renderIngModalBody(); }
   function handleIngKeydown(e) {
-    if (e.key==='Enter') { e.preventDefault(); addIngredientManual(); }
+    if (e.key==='Enter' && !e.shiftKey) {
+      const val = document.getElementById('ing-new-input')?.value || '';
+      // if already multiline, Enter adds all; if single line, also add
+      if (!val.includes('\n')) { e.preventDefault(); addIngredientManual(); }
+      // if multiline, let them press the button or use Shift+Enter naturally
+    }
   }
   function addIngredientManual() {
     const input=document.getElementById('ing-new-input');
@@ -792,9 +797,9 @@
     container.innerHTML=currentWeek.map((d,i)=>{
       const hasIng=d.ingredients&&d.ingredients.length>0;
       const wid=`week-ing-${i}`;
-      return `<div class="week-day-wrap" data-idx="${i}" draggable="true">
+      return `<div class="week-day-wrap" data-idx="${i}">
         <div class="week-day${hasIng?' has-ing':''}">
-          <span class="drag-handle" title="Drag to reorder">⠿</span>
+          <span class="drag-handle" data-idx="${i}" title="Drag to reorder">⠿</span>
           <div class="day-label">${DAYS[i]}</div>
           <div class="day-divider"></div>
           <div class="day-meal" style="cursor:pointer" onclick="openDetailModal('${d.id}')">${esc(d.name)}${d.is_favorite?' <span style="font-size:0.75rem">⭐</span>':''}</div>
@@ -972,36 +977,105 @@
   // ── Drag-to-reorder week ──────────────────────────────────
   let dragSrcIdx = -1;
   function initWeekDrag() {
-    const wraps = document.querySelectorAll('.week-day-wrap[data-idx]');
-    wraps.forEach(el => {
-      el.addEventListener('dragstart', e => {
-        dragSrcIdx = parseInt(el.dataset.idx);
-        el.classList.add('dragging');
+    const wraps = () => [...document.querySelectorAll('.week-day-wrap[data-idx]')];
+
+    // ── Desktop drag (handle only) ──
+    document.querySelectorAll('.drag-handle[data-idx]').forEach(handle => {
+      const idx = parseInt(handle.dataset.idx);
+      const wrap = handle.closest('.week-day-wrap');
+      wrap.setAttribute('draggable', 'false'); // wrap NOT draggable
+      handle.setAttribute('draggable', 'true');
+
+      handle.addEventListener('dragstart', e => {
+        dragSrcIdx = idx;
+        setTimeout(() => wrap.classList.add('dragging'), 0);
         e.dataTransfer.effectAllowed = 'move';
+        e.stopPropagation();
       });
-      el.addEventListener('dragend', () => {
-        document.querySelectorAll('.week-day-wrap').forEach(w => { w.classList.remove('dragging','drag-over'); });
+      handle.addEventListener('dragend', () => {
+        wraps().forEach(w => w.classList.remove('dragging', 'drag-over'));
+        dragSrcIdx = -1;
       });
+    });
+
+    wraps().forEach(el => {
       el.addEventListener('dragover', e => {
+        if (dragSrcIdx < 0) return;
         e.preventDefault(); e.dataTransfer.dropEffect = 'move';
-        document.querySelectorAll('.week-day-wrap').forEach(w => w.classList.remove('drag-over'));
+        wraps().forEach(w => w.classList.remove('drag-over'));
         el.classList.add('drag-over');
       });
-      el.addEventListener('dragleave', () => el.classList.remove('drag-over'));
+      el.addEventListener('dragleave', e => {
+        if (!el.contains(e.relatedTarget)) el.classList.remove('drag-over');
+      });
       el.addEventListener('drop', async e => {
         e.preventDefault();
         const targetIdx = parseInt(el.dataset.idx);
         if (dragSrcIdx < 0 || dragSrcIdx === targetIdx) return;
-        const arr = [...currentWeek];
-        const [moved] = arr.splice(dragSrcIdx, 1);
-        arr.splice(targetIdx, 0, moved);
-        currentWeek = arr;
+        await reorderWeek(dragSrcIdx, targetIdx);
         dragSrcIdx = -1;
-        renderWeek(); renderShop();
-        await saveCurrentWeek();
-        showToast('Order saved!');
       });
     });
+
+    // ── Mobile touch drag ──
+    let touchSrcIdx = -1, touchClone = null, touchOffsetY = 0;
+
+    document.querySelectorAll('.drag-handle[data-idx]').forEach(handle => {
+      handle.addEventListener('touchstart', e => {
+        touchSrcIdx = parseInt(handle.dataset.idx);
+        const wrap = handle.closest('.week-day-wrap');
+        const rect = wrap.getBoundingClientRect();
+        const touch = e.touches[0];
+        touchOffsetY = touch.clientY - rect.top;
+        // ghost clone
+        touchClone = wrap.cloneNode(true);
+        touchClone.style.cssText = `position:fixed;left:${rect.left}px;top:${rect.top}px;width:${rect.width}px;opacity:0.85;pointer-events:none;z-index:999;border:1px dashed var(--accent2);border-radius:12px;background:var(--surface2);transition:none;`;
+        document.body.appendChild(touchClone);
+        wrap.classList.add('dragging');
+        e.preventDefault();
+      }, { passive: false });
+
+      handle.addEventListener('touchmove', e => {
+        if (touchSrcIdx < 0 || !touchClone) return;
+        const touch = e.touches[0];
+        touchClone.style.top = (touch.clientY - touchOffsetY) + 'px';
+        // find target
+        wraps().forEach(w => w.classList.remove('drag-over'));
+        const midY = touch.clientY;
+        wraps().forEach(w => {
+          const r = w.getBoundingClientRect();
+          if (midY >= r.top && midY <= r.bottom) w.classList.add('drag-over');
+        });
+        e.preventDefault();
+      }, { passive: false });
+
+      handle.addEventListener('touchend', async e => {
+        if (touchSrcIdx < 0) return;
+        const touch = e.changedTouches[0];
+        if (touchClone) { touchClone.remove(); touchClone = null; }
+        wraps().forEach(w => w.classList.remove('dragging', 'drag-over'));
+        // find drop target
+        let targetIdx = -1;
+        wraps().forEach(w => {
+          const r = w.getBoundingClientRect();
+          if (touch.clientY >= r.top && touch.clientY <= r.bottom) targetIdx = parseInt(w.dataset.idx);
+        });
+        if (targetIdx >= 0 && targetIdx !== touchSrcIdx) {
+          await reorderWeek(touchSrcIdx, targetIdx);
+        }
+        touchSrcIdx = -1;
+      });
+    });
+  }
+
+  async function reorderWeek(fromIdx, toIdx) {
+    const arr = [...currentWeek];
+    const [moved] = arr.splice(fromIdx, 1);
+    arr.splice(toIdx, 0, moved);
+    currentWeek = arr;
+    renderWeek(); renderShop();
+    await saveCurrentWeek();
+    showToast('Order saved!');
   }
 
   function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}}
