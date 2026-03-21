@@ -251,9 +251,39 @@
     .toast.show { opacity: 1; transform: none; }
     .toast.error { border-color: var(--danger); color: var(--danger); }
 
+    /* ── DETAIL MODAL ── */
+    .detail-modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .detail-stat { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; }
+    .detail-stat-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-dim); margin-bottom: 4px; }
+    .detail-stat-value { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--accent); }
+    .detail-stat-sub { font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; }
+    .detail-section { display: flex; flex-direction: column; gap: 8px; }
+    .detail-section-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-dim); font-weight: 500; }
+    .detail-ing-list { display: flex; flex-direction: column; gap: 5px; }
+    .detail-ing-item { display: flex; align-items: baseline; gap: 8px; font-size: 0.85rem; color: var(--text-muted); }
+    .detail-ing-item::before { content: '·'; color: var(--accent2); flex-shrink: 0; }
+    .detail-recipe-btn { display: inline-flex; align-items: center; gap: 8px; background: rgba(232,196,122,0.08); border: 1px solid var(--accent2); color: var(--accent); border-radius: 8px; padding: 10px 16px; font-size: 0.85rem; font-weight: 500; text-decoration: none; transition: all 0.15s; font-family: 'DM Sans', sans-serif; }
+    .detail-recipe-btn:hover { background: rgba(232,196,122,0.15); }
+    .detail-history-list { display: flex; flex-direction: column; gap: 4px; max-height: 120px; overflow-y: auto; }
+    .detail-history-item { font-size: 0.78rem; color: var(--text-muted); padding: 4px 8px; background: var(--surface2); border-radius: 5px; }
+    .detail-empty { font-size: 0.8rem; color: var(--text-dim); font-style: italic; }
+    .detail-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+    .detail-tag { font-size: 0.7rem; padding: 3px 10px; border-radius: 20px; border: 1px solid var(--border); color: var(--text-muted); }
+    .detail-tag.fav { border-color: rgba(232,196,122,0.4); color: var(--accent); background: rgba(232,196,122,0.06); }
+    .detail-tag.skipped { border-color: rgba(196,96,96,0.4); color: var(--danger); background: rgba(196,96,96,0.06); }
+
+    /* ── DRAG TO REORDER ── */
+    .week-day-wrap { cursor: default; }
+    .week-day-wrap.dragging { opacity: 0.4; }
+    .week-day-wrap.drag-over .week-day { border-color: var(--accent2); border-style: dashed; }
+    .drag-handle { color: var(--text-dim); cursor: grab; font-size: 0.85rem; padding: 4px 6px; border-radius: 5px; transition: color 0.15s; user-select: none; -webkit-user-select: none; flex-shrink: 0; }
+    .drag-handle:hover { color: var(--text-muted); background: var(--surface2); }
+    .drag-handle:active { cursor: grabbing; }
+
     @media(max-width:640px){
       header{padding:16px 20px} main{padding:24px 16px} .tabs{padding:12px 16px 0} .tab{padding:8px 12px;font-size:0.78rem}
       .day-note{display:none} #setup-screen{margin:30px auto} .week-controls{gap:8px}
+      .detail-modal-grid{grid-template-columns:1fr}
     }
   </style>
 </head>
@@ -378,6 +408,20 @@
       <button class="btn btn-ghost" onclick="closeIngModal()">Cancel</button>
       <button class="btn btn-primary" id="ing-save-btn" onclick="saveIngredients()">Save Ingredients</button>
     </div>
+  </div>
+</div>
+
+<!-- ══ DETAIL MODAL ══════════════════════════════════════════ -->
+<div class="modal-overlay" id="detail-modal" onclick="closeModalOverlay(event,'detail-modal')">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <div>
+        <h3 id="detail-modal-title">Dinner Detail</h3>
+        <div class="modal-sub" id="detail-modal-sub"></div>
+      </div>
+      <button class="modal-close" onclick="closeDetailModal()">✕</button>
+    </div>
+    <div class="modal-body" id="detail-modal-body"></div>
   </div>
 </div>
 
@@ -573,7 +617,7 @@
             <div class="dinner-card-top-left">
               <button class="star-btn${d.is_favorite?' starred':''}" onclick="toggleFavorite('${d.id}')">${d.is_favorite?'★':'☆'}</button>
               <div>
-                <div class="dinner-name">${esc(d.name)}</div>
+                <div class="dinner-name" style="cursor:pointer" onclick="openDetailModal('${d.id}')">${esc(d.name)}</div>
                 ${d.servings?`<div class="dinner-meta">Serves ${d.servings}</div>`:''}
               </div>
             </div>
@@ -677,6 +721,7 @@
       await sb('last_week','PATCH',{dinner_ids:picked.map(d=>d.id)},'?id=eq.1');
       await sb('week_history','POST',{meals:picked.map((d,i)=>({day:DAYS[i],id:d.id,name:d.name,note:d.note||null}))});
       currentWeek=picked;
+      cachedHistory = null; // invalidate cache
       // clear shop checks for new week
       shopChecks={};
       localStorage.setItem(K_SHOP,JSON.stringify(shopChecks));
@@ -703,7 +748,7 @@
     setTimeout(()=>document.getElementById('modal-search').focus(),100);
   }
   function closePickModal() { document.getElementById('pick-modal').classList.remove('open'); pickingIndex=-1; }
-  function closeModalOverlay(e,id) { if(e.target===document.getElementById(id)){if(id==='pick-modal')closePickModal();else if(id==='ing-modal')closeIngModal();} }
+  function closeModalOverlay(e,id) { if(e.target===document.getElementById(id)){if(id==='pick-modal')closePickModal();else if(id==='ing-modal')closeIngModal();else if(id==='detail-modal')closeDetailModal();} }
   function filterModal() {
     const q=document.getElementById('modal-search').value.toLowerCase();
     const currentIds=new Set(currentWeek.map(d=>d.id));
@@ -747,11 +792,12 @@
     container.innerHTML=currentWeek.map((d,i)=>{
       const hasIng=d.ingredients&&d.ingredients.length>0;
       const wid=`week-ing-${i}`;
-      return `<div class="week-day-wrap">
+      return `<div class="week-day-wrap" data-idx="${i}" draggable="true">
         <div class="week-day${hasIng?' has-ing':''}">
+          <span class="drag-handle" title="Drag to reorder">⠿</span>
           <div class="day-label">${DAYS[i]}</div>
           <div class="day-divider"></div>
-          <div class="day-meal">${esc(d.name)}${d.is_favorite?' <span style="font-size:0.75rem">⭐</span>':''}</div>
+          <div class="day-meal" style="cursor:pointer" onclick="openDetailModal('${d.id}')">${esc(d.name)}${d.is_favorite?' <span style="font-size:0.75rem">⭐</span>':''}</div>
           ${d.note?`<div class="day-note">${renderNote(d.note)}</div>`:''}
           <div class="day-actions">
             ${hasIng?`<button class="btn-icon" onclick="toggleWeekIng('${wid}')" title="Ingredients">🧾</button>`:''}
@@ -762,6 +808,7 @@
         ${hasIng?`<div class="week-day-ingredients" id="${wid}"><ul class="ingredients-list">${d.ingredients.map(ing=>`<li>${esc(ing)}</li>`).join('')}</ul></div>`:''}
       </div>`;
     }).join('');
+    initWeekDrag();
   }
   function toggleWeekIng(wid) { document.getElementById(wid)?.classList.toggle('open'); }
   function copyWeek() {
@@ -865,7 +912,98 @@
     if (name==='history') loadHistory();
   }
 
-  // ── Utils ────────────────────────────────────────────────
+
+  // ── Detail Modal ─────────────────────────────────────────
+  let cachedHistory = null;
+  async function openDetailModal(id) {
+    const d = dinners.find(x => x.id === id); if (!d) return;
+    document.getElementById('detail-modal-title').textContent = d.name;
+    const tags = [];
+    if (d.is_favorite) tags.push('<span class="detail-tag fav">⭐ Favorite</span>');
+    if (d.skip_generate) tags.push('<span class="detail-tag skipped">⊘ Skipped</span>');
+    if (d.servings) tags.push(`<span class="detail-tag">Serves ${d.servings}</span>`);
+    document.getElementById('detail-modal-sub').innerHTML = tags.join('') || '&nbsp;';
+    document.getElementById('detail-modal-body').innerHTML = '<div class="loading"><span class="spinner"></span>Loading…</div>';
+    document.getElementById('detail-modal').classList.add('open');
+
+    // Load history to compute usage
+    try {
+      if (!cachedHistory) cachedHistory = await sb('week_history','GET',null,'?order=created_at.desc&limit=52');
+      const usedWeeks = (cachedHistory||[]).filter(row => Array.isArray(row.meals) && row.meals.some(m => m.id === id));
+      const usageCount = usedWeeks.length;
+      const lastUsed = usedWeeks[0] ? new Date(usedWeeks[0].created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : null;
+      const weekNames = usedWeeks.slice(0,5).map(row => {
+        const d2 = new Date(row.created_at);
+        return `<div class="detail-history-item">Week of ${d2.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</div>`;
+      }).join('');
+
+      const hasIng = d.ingredients && d.ingredients.length > 0;
+      const hasRecipe = d.note && isUrl(d.note);
+      const hasNote = d.note && !isUrl(d.note);
+
+      document.getElementById('detail-modal-body').innerHTML = `
+        <div class="detail-modal-grid">
+          <div class="detail-stat">
+            <div class="detail-stat-label">Times Used</div>
+            <div class="detail-stat-value">${usageCount}</div>
+            <div class="detail-stat-sub">${usageCount === 0 ? 'Never planned' : lastUsed ? 'Last: ' + lastUsed : ''}</div>
+          </div>
+          <div class="detail-stat">
+            <div class="detail-stat-label">Ingredients</div>
+            <div class="detail-stat-value">${hasIng ? d.ingredients.length : '—'}</div>
+            <div class="detail-stat-sub">${hasIng ? 'items tracked' : 'none added yet'}</div>
+          </div>
+        </div>
+        ${hasRecipe ? `<div class="detail-section"><div class="detail-section-label">Recipe</div><a class="detail-recipe-btn" href="${esc(d.note)}" target="_blank" rel="noopener">↗ Open Recipe</a></div>` : ''}
+        ${hasNote ? `<div class="detail-section"><div class="detail-section-label">Note</div><div style="font-size:0.85rem;color:var(--text-muted);line-height:1.6">${esc(d.note)}</div></div>` : ''}
+        ${hasIng ? `<div class="detail-section"><div class="detail-section-label">Ingredients</div><div class="detail-ing-list">${d.ingredients.map(i=>`<div class="detail-ing-item">${esc(i)}</div>`).join('')}</div></div>` : ''}
+        <div class="detail-section">
+          <div class="detail-section-label">Past Uses</div>
+          ${usedWeeks.length ? `<div class="detail-history-list">${weekNames}${usedWeeks.length > 5 ? `<div class="detail-history-item" style="color:var(--text-dim);font-style:italic">+ ${usedWeeks.length - 5} more…</div>` : ''}</div>` : '<div class="detail-empty">Not used in any saved week yet.</div>'}
+        </div>`;
+    } catch(e) {
+      document.getElementById('detail-modal-body').innerHTML = '<div style="color:var(--text-dim);font-size:0.85rem">Could not load details.</div>';
+    }
+  }
+  function closeDetailModal() {
+    document.getElementById('detail-modal').classList.remove('open');
+  }
+
+  // ── Drag-to-reorder week ──────────────────────────────────
+  let dragSrcIdx = -1;
+  function initWeekDrag() {
+    const wraps = document.querySelectorAll('.week-day-wrap[data-idx]');
+    wraps.forEach(el => {
+      el.addEventListener('dragstart', e => {
+        dragSrcIdx = parseInt(el.dataset.idx);
+        el.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+      });
+      el.addEventListener('dragend', () => {
+        document.querySelectorAll('.week-day-wrap').forEach(w => { w.classList.remove('dragging','drag-over'); });
+      });
+      el.addEventListener('dragover', e => {
+        e.preventDefault(); e.dataTransfer.dropEffect = 'move';
+        document.querySelectorAll('.week-day-wrap').forEach(w => w.classList.remove('drag-over'));
+        el.classList.add('drag-over');
+      });
+      el.addEventListener('dragleave', () => el.classList.remove('drag-over'));
+      el.addEventListener('drop', async e => {
+        e.preventDefault();
+        const targetIdx = parseInt(el.dataset.idx);
+        if (dragSrcIdx < 0 || dragSrcIdx === targetIdx) return;
+        const arr = [...currentWeek];
+        const [moved] = arr.splice(dragSrcIdx, 1);
+        arr.splice(targetIdx, 0, moved);
+        currentWeek = arr;
+        dragSrcIdx = -1;
+        renderWeek(); renderShop();
+        await saveCurrentWeek();
+        showToast('Order saved!');
+      });
+    });
+  }
+
   function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}}
   function showToast(msg,isErr=false){
     const t=document.getElementById('toast');
@@ -873,7 +1011,7 @@
     clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),2800);
   }
   document.addEventListener('keydown',e=>{
-    if(e.key==='Escape'){closePickModal();closeIngModal();cancelEdit();}
+    if(e.key==='Escape'){closePickModal();closeIngModal();cancelEdit();closeDetailModal();}
     if(e.target.id==='input-name'&&e.key==='Enter') document.getElementById('input-note').focus();
     if(e.target.id==='input-note'&&e.key==='Enter') document.getElementById('input-servings').focus();
     if(e.target.id==='input-servings'&&e.key==='Enter') addDinner();
