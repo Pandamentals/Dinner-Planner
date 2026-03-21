@@ -206,9 +206,6 @@
     /* ── INGREDIENT MODAL ── */
     .ing-step { display: flex; flex-direction: column; gap: 10px; }
     .ing-step-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent2); font-weight: 500; }
-    .ing-paste-area { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.85rem; outline: none; resize: vertical; min-height: 110px; line-height: 1.5; transition: border-color 0.2s; }
-    .ing-paste-area:focus { border-color: var(--accent2); }
-    .ing-paste-area::placeholder { color: var(--text-dim); }
     .parse-hint { font-size: 0.75rem; color: var(--text-dim); line-height: 1.5; }
     .ing-edit-list { display: flex; flex-direction: column; gap: 6px; }
     .ing-edit-row { display: flex; gap: 8px; align-items: center; }
@@ -417,23 +414,7 @@
     return t ? JSON.parse(t) : null;
   }
 
-  // ── Claude API ───────────────────────────────────────────
-  async function parseIngredientsWithClaude(text) {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        messages: [{ role: 'user', content: `Extract the ingredients from this recipe text. Return ONLY a JSON array of strings, one ingredient per item with quantity (e.g. ["2 cups flour","1 tsp salt"]). No markdown, no explanation, just the raw JSON array. If none found return [].\n\nText:\n${text}` }]
-      })
-    });
-    if (!res.ok) throw new Error('API error');
-    const data = await res.json();
-    const raw = data.content.map(b=>b.text||'').join('');
-    const parsed = JSON.parse(raw.replace(/```json|```/g,'').trim());
-    return Array.isArray(parsed) ? parsed : [];
-  }
+
 
   // ── Setup ────────────────────────────────────────────────
   function showSetup() {
@@ -622,62 +603,39 @@
     ingModalDinnerId=id;
     editingIngredients=d.ingredients?[...d.ingredients]:[];
     document.getElementById('ing-modal-title').textContent=d.name;
-    document.getElementById('ing-modal-sub').textContent='Paste recipe text to auto-extract, or add manually';
+    document.getElementById('ing-modal-sub').textContent='Add ingredients one at a time, or paste multiple lines';
     renderIngModalBody();
     document.getElementById('ing-modal').classList.add('open');
   }
   function closeIngModal() { document.getElementById('ing-modal').classList.remove('open'); ingModalDinnerId=null; editingIngredients=[]; }
-  function renderIngModalBody(parsing=false) {
+  function renderIngModalBody() {
     const body=document.getElementById('ing-modal-body');
     const hasIng=editingIngredients.length>0;
     body.innerHTML=`
-      <div class="ing-step">
-        <div class="ing-step-label">Paste recipe text</div>
-        <textarea class="ing-paste-area" id="ing-paste" placeholder="Paste ingredients list or full recipe text — Claude will extract automatically…"></textarea>
-        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-          <button class="btn btn-primary" style="padding:8px 18px;font-size:0.82rem" id="parse-btn" onclick="parseIngredients()" ${parsing?'disabled':''}>
-            ${parsing?'<span class="spinner-sm"></span> Parsing…':'✦ Parse Ingredients'}
-          </button>
-          <span class="parse-hint">Copy text from any recipe site and paste here.</span>
-        </div>
-      </div>
-      <div style="display:flex;align-items:center;gap:12px">
-        <div style="flex:1;height:1px;background:var(--border)"></div>
-        <span style="font-size:0.72rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.08em">ingredients list</span>
-        <div style="flex:1;height:1px;background:var(--border)"></div>
-      </div>
-      <div class="ing-step">
-        ${hasIng?`<div class="ing-edit-list" id="ing-edit-list">
-          ${editingIngredients.map((ing,i)=>`<div class="ing-edit-row" id="ing-row-${i}">
-            <input class="ing-edit-input" value="${esc(ing)}" onchange="updateIngredient(${i},this.value)"/>
-            <button class="ing-remove-btn" onclick="removeIngredient(${i})">✕</button>
-          </div>`).join('')}
-        </div>`:`<div style="font-size:0.82rem;color:var(--text-dim);padding:4px 0">No ingredients yet — paste text above or add manually.</div>`}
-        <div class="ing-add-row">
-          <input class="ing-add-input" id="ing-new-input" placeholder="Add an ingredient…" onkeydown="if(event.key==='Enter')addIngredientManual()"/>
-          <button class="ing-add-btn" onclick="addIngredientManual()">+ Add</button>
-        </div>
+      ${hasIng?`<div class="ing-edit-list" id="ing-edit-list">
+        ${editingIngredients.map((ing,i)=>`<div class="ing-edit-row">
+          <input class="ing-edit-input" value="${esc(ing)}" onchange="updateIngredient(${i},this.value)" onblur="updateIngredient(${i},this.value)"/>
+          <button class="ing-remove-btn" onclick="removeIngredient(${i})">\u2715</button>
+        </div>`).join('')}
+      </div>`:`<div style="font-size:0.82rem;color:var(--text-dim);padding:4px 0 8px">No ingredients yet.<br><span style="font-size:0.75rem">Tip: paste multiple lines at once and hit Add All.</span></div>`}
+      <div class="ing-add-row">
+        <input class="ing-add-input" id="ing-new-input" placeholder="e.g. 2 cups flour  (paste multiple lines for bulk add)" onkeydown="handleIngKeydown(event)"/>
+        <button class="ing-add-btn" onclick="addIngredientManual()">+ Add</button>
       </div>`;
-  }
-  async function parseIngredients() {
-    const text=document.getElementById('ing-paste')?.value?.trim();
-    if (!text) { showToast('Paste some recipe text first.'); return; }
-    renderIngModalBody(true);
-    try {
-      const result=await parseIngredientsWithClaude(text);
-      if (!result.length) { showToast('Could not find ingredients — try pasting just the ingredients section.',true); renderIngModalBody(); return; }
-      const existing=new Set(editingIngredients.map(s=>s.toLowerCase().trim()));
-      result.forEach(r=>{ if(!existing.has(r.toLowerCase().trim())) editingIngredients.push(r); });
-      renderIngModalBody(); showToast(`Parsed ${result.length} ingredients!`);
-    } catch(e) { showToast('Parsing failed — try again.',true); renderIngModalBody(); }
+    setTimeout(()=>document.getElementById('ing-new-input')?.focus(), 80);
   }
   function updateIngredient(i,val) { editingIngredients[i]=val; }
   function removeIngredient(i) { editingIngredients.splice(i,1); renderIngModalBody(); }
+  function handleIngKeydown(e) {
+    if (e.key==='Enter') { e.preventDefault(); addIngredientManual(); }
+  }
   function addIngredientManual() {
     const input=document.getElementById('ing-new-input');
-    const val=input?.value?.trim(); if(!val) return;
-    editingIngredients.push(val); renderIngModalBody();
-    setTimeout(()=>document.getElementById('ing-new-input')?.focus(),50);
+    const raw=input?.value||'';
+    const lines=raw.split('\n').map(s=>s.trim()).filter(Boolean);
+    if (!lines.length) return;
+    lines.forEach(l=>editingIngredients.push(l));
+    renderIngModalBody();
   }
   async function saveIngredients() {
     if (!ingModalDinnerId) return;
