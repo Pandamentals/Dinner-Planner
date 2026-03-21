@@ -11,7 +11,7 @@
       --bg: #0f0e0c; --surface: #1a1815; --surface2: #242118; --border: #2e2b24;
       --accent: #e8c47a; --accent2: #c4a25a; --text: #f0ebe0;
       --text-muted: #7a7060; --text-dim: #4a4438; --danger: #c46060;
-      --green: #7ab88a; --radius: 12px;
+      --star: #e8c47a; --radius: 12px;
     }
     body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 0 0 80px; }
 
@@ -27,7 +27,6 @@
     .step-text { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; }
     .step-text a { color: var(--accent2); }
     .step-text code { background: var(--surface2); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; font-size: 0.82rem; color: var(--text); }
-    .sql-block { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; font-size: 0.78rem; color: #a0c8a0; font-family: monospace; line-height: 1.7; margin-top: 8px; white-space: pre; overflow-x: auto; }
     .s-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
     .s-field label { font-size: 0.75rem; color: var(--text-muted); font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; }
     .s-field input { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.88rem; outline: none; transition: border-color 0.2s; width: 100%; }
@@ -59,13 +58,25 @@
     .btn-primary:hover:not(:disabled) { background: #f0d090; transform: translateY(-1px); }
     .btn-ghost { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
     .btn-ghost:hover:not(:disabled) { color: var(--text); border-color: var(--text-muted); }
+    .btn-ghost.active-filter { background: var(--surface2); color: var(--accent); border-color: var(--accent2); }
     .btn-danger { background: transparent; color: var(--danger); border: 1px solid transparent; padding: 6px 10px; font-size: 0.78rem; }
     .btn-danger:hover:not(:disabled) { background: rgba(196,96,96,0.1); border-color: var(--danger); }
     .btn-icon { background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 5px 9px; font-size: 0.8rem; border-radius: 7px; cursor: pointer; transition: all 0.15s; font-family: 'DM Sans', sans-serif; }
     .btn-icon:hover { background: var(--surface2); color: var(--text); border-color: var(--text-dim); }
+    .btn-sm { padding: 5px 12px; font-size: 0.75rem; border-radius: 7px; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 500; transition: all 0.15s; }
+    .btn-sm-ghost { background: transparent; border: 1px solid var(--border); color: var(--text-muted); }
+    .btn-sm-ghost:hover:not(:disabled) { color: var(--text); border-color: var(--text-dim); }
+    .btn-sm-accent { background: var(--surface2); border: 1px solid var(--accent2); color: var(--accent); }
+    .btn-sm-accent:hover:not(:disabled) { background: rgba(232,196,122,0.1); }
+
+    /* ── STAR ── */
+    .star-btn { background: none; border: none; cursor: pointer; font-size: 1rem; line-height: 1; padding: 2px 4px; border-radius: 5px; transition: transform 0.15s; color: var(--text-dim); }
+    .star-btn:hover { transform: scale(1.2); }
+    .star-btn.starred { color: var(--star); }
 
     /* ── LIBRARY ── */
-    .add-form { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 36px; }
+    .library-toolbar { display: flex; gap: 10px; align-items: center; margin-bottom: 20px; flex-wrap: wrap; }
+    .add-form { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 28px; }
     .form-row { display: flex; gap: 12px; flex-wrap: wrap; }
     .form-field { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 200px; }
     .form-field label { font-size: 0.75rem; color: var(--text-muted); font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; }
@@ -73,14 +84,34 @@
     .form-field input:focus { border-color: var(--accent2); }
     .form-field input::placeholder { color: var(--text-dim); }
     .form-actions { display: flex; justify-content: flex-end; margin-top: 16px; }
-    .dinner-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(260px,1fr)); gap: 12px; }
+    .dinner-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(280px,1fr)); gap: 12px; }
+
+    /* ── DINNER CARD ── */
     .dinner-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; display: flex; flex-direction: column; gap: 8px; transition: border-color 0.2s; }
     .dinner-card:hover { border-color: var(--text-dim); }
-    .dinner-card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+    .dinner-card.is-favorite { border-color: rgba(232,196,122,0.3); }
+    .dinner-card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 6px; }
+    .dinner-card-top-left { display: flex; align-items: flex-start; gap: 6px; flex: 1; min-width: 0; }
     .dinner-name { font-family: 'Playfair Display', serif; font-size: 1rem; color: var(--text); line-height: 1.3; }
     .dinner-note { font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; word-break: break-word; }
     .dinner-note a { color: var(--accent2); text-decoration: none; }
     .dinner-note a:hover { text-decoration: underline; }
+    .card-actions { display: flex; gap: 4px; align-items: center; flex-shrink: 0; }
+    .card-footer { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 2px; }
+
+    /* ── INGREDIENTS ── */
+    .ingredients-toggle { font-size: 0.72rem; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; gap: 4px; background: none; border: none; font-family: 'DM Sans', sans-serif; padding: 0; transition: color 0.15s; }
+    .ingredients-toggle:hover { color: var(--accent2); }
+    .ingredients-toggle .arrow { display: inline-block; transition: transform 0.2s; font-size: 0.6rem; }
+    .ingredients-toggle.open .arrow { transform: rotate(180deg); }
+    .ingredients-block { display: none; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; margin-top: 2px; }
+    .ingredients-block.open { display: block; animation: fadeIn 0.15s ease; }
+    .ingredients-list { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+    .ingredients-list li { font-size: 0.8rem; color: var(--text-muted); display: flex; gap: 8px; align-items: baseline; line-height: 1.4; }
+    .ingredients-list li::before { content: '·'; color: var(--accent2); flex-shrink: 0; }
+    .extract-btn { font-size: 0.72rem; color: var(--accent2); background: none; border: 1px solid var(--border); border-radius: 6px; padding: 3px 9px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.15s; display: flex; align-items: center; gap: 5px; }
+    .extract-btn:hover:not(:disabled) { background: rgba(232,196,122,0.08); border-color: var(--accent2); }
+    .extract-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
     /* ── WEEK ── */
     .week-controls { display: flex; gap: 12px; align-items: center; margin-bottom: 28px; flex-wrap: wrap; }
@@ -88,10 +119,14 @@
     .week-info strong { color: var(--text); }
     .week-accent { color: var(--accent); }
     .week-plan { display: flex; flex-direction: column; gap: 8px; }
-    .week-day { display: flex; align-items: center; gap: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 18px; animation: slideIn 0.3s ease both; transition: border-color 0.2s; }
-    .week-day:hover { border-color: var(--text-dim); }
+    .week-day-wrap { animation: slideIn 0.3s ease both; }
+    .week-day-wrap:nth-child(1){animation-delay:0s}.week-day-wrap:nth-child(2){animation-delay:.06s}.week-day-wrap:nth-child(3){animation-delay:.12s}.week-day-wrap:nth-child(4){animation-delay:.18s}.week-day-wrap:nth-child(5){animation-delay:.24s}
     @keyframes slideIn { from { opacity:0; transform:translateX(-10px); } to { opacity:1; transform:none; } }
-    .week-day:nth-child(1){animation-delay:0s}.week-day:nth-child(2){animation-delay:.06s}.week-day:nth-child(3){animation-delay:.12s}.week-day:nth-child(4){animation-delay:.18s}.week-day:nth-child(5){animation-delay:.24s}
+    .week-day { display: flex; align-items: center; gap: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 18px; transition: border-color 0.2s; border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+    .week-day-alone { border-radius: var(--radius) !important; }
+    .week-day:hover { border-color: var(--text-dim); }
+    .week-day-ingredients { background: var(--surface2); border: 1px solid var(--border); border-top: none; border-bottom-left-radius: var(--radius); border-bottom-right-radius: var(--radius); padding: 10px 18px 12px; display: none; }
+    .week-day-ingredients.open { display: block; }
     .day-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-dim); font-weight: 500; min-width: 36px; }
     .day-divider { width: 1px; height: 28px; background: var(--border); flex-shrink: 0; }
     .day-meal { font-family: 'Playfair Display', serif; font-size: 1.05rem; color: var(--text); flex: 1; }
@@ -100,7 +135,7 @@
     .day-note a:hover { text-decoration: underline; }
     .day-actions { display: flex; gap: 6px; flex-shrink: 0; }
 
-    /* ── PICK MODAL ── */
+    /* ── MODAL ── */
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 50; display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px); }
     .modal-overlay.open { display: flex; animation: fadeIn 0.15s ease; }
     .modal { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); width: 100%; max-width: 480px; max-height: 80vh; display: flex; flex-direction: column; overflow: hidden; }
@@ -114,18 +149,21 @@
     .modal-search input:focus { border-color: var(--accent2); }
     .modal-search input::placeholder { color: var(--text-dim); }
     .modal-list { overflow-y: auto; padding: 8px 12px 12px; }
-    .modal-item { padding: 11px 14px; border-radius: 8px; cursor: pointer; transition: background 0.15s; display: flex; flex-direction: column; gap: 3px; }
+    .modal-item { padding: 11px 14px; border-radius: 8px; cursor: pointer; transition: background 0.15s; display: flex; align-items: center; gap: 10px; }
     .modal-item:hover { background: var(--surface2); }
     .modal-item.current { opacity: 0.35; cursor: not-allowed; }
+    .modal-item-info { flex: 1; }
     .modal-item-name { font-family: 'Playfair Display', serif; font-size: 0.95rem; color: var(--text); }
     .modal-item-note { font-size: 0.75rem; color: var(--text-muted); }
+    .modal-star { color: var(--text-dim); font-size: 0.85rem; }
+    .modal-star.starred { color: var(--star); }
 
     /* ── HISTORY ── */
     .history-list { display: flex; flex-direction: column; gap: 16px; }
     .history-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; transition: border-color 0.2s; }
     .history-card:hover { border-color: var(--text-dim); }
     .history-header { padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
-    .history-date { font-size: 0.8rem; color: var(--accent2); font-weight: 500; letter-spacing: 0.03em; }
+    .history-date { font-size: 0.8rem; color: var(--accent2); font-weight: 500; }
     .history-preview { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
     .history-toggle { color: var(--text-dim); font-size: 0.8rem; transition: transform 0.2s; }
     .history-toggle.open { transform: rotate(180deg); }
@@ -144,15 +182,16 @@
     .empty-state p { font-size: 0.9rem; line-height: 1.6; }
     .loading { text-align: center; padding: 40px; color: var(--text-dim); font-size: 0.9rem; }
     .spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; margin-right: 8px; vertical-align: middle; }
+    .spinner-sm { display: inline-block; width: 12px; height: 12px; border: 2px solid var(--border); border-top-color: var(--accent2); border-radius: 50%; animation: spin 0.7s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
     .count-badge { display: inline-block; background: var(--surface2); border: 1px solid var(--border); color: var(--text-muted); font-size: 0.7rem; padding: 2px 8px; border-radius: 20px; margin-left: 8px; vertical-align: middle; }
-    .toast { position: fixed; bottom: 28px; right: 28px; background: var(--surface); border: 1px solid var(--accent2); color: var(--accent); padding: 12px 20px; border-radius: 10px; font-size: 0.85rem; font-weight: 500; z-index: 200; opacity: 0; transform: translateY(10px); transition: all 0.25s; pointer-events: none; }
+    .toast { position: fixed; bottom: 28px; right: 28px; background: var(--surface); border: 1px solid var(--accent2); color: var(--accent); padding: 12px 20px; border-radius: 10px; font-size: 0.85rem; font-weight: 500; z-index: 200; opacity: 0; transform: translateY(10px); transition: all 0.25s; pointer-events: none; max-width: 300px; }
     .toast.show { opacity: 1; transform: none; }
     .toast.error { border-color: var(--danger); color: var(--danger); }
 
     @media(max-width:640px){
-      header{padding:20px} main{padding:24px 20px} .tabs{padding:16px 20px 0} .tab{padding:8px 14px; font-size:0.8rem}
-      .day-note{display:none} #setup-screen{margin:30px auto} .week-day{flex-wrap:wrap}
+      header{padding:20px} main{padding:24px 20px} .tabs{padding:16px 20px 0} .tab{padding:8px 14px;font-size:0.8rem}
+      .day-note{display:none} #setup-screen{margin:30px auto}
     }
   </style>
 </head>
@@ -163,16 +202,10 @@
   <h1>Dinner Planner</h1>
   <p class="subtitle">One-time setup — connect your Supabase database</p>
   <div class="setup-card">
-    <h2>Step 1 — Create your Supabase project & run SQL</h2>
+    <h2>Paste your Supabase API keys</h2>
     <div class="setup-steps">
-      <div class="step"><div class="step-num">1</div><div class="step-text">Go to <a href="https://supabase.com" target="_blank">supabase.com</a> → sign up free → <strong>New Project</strong>.</div></div>
-      <div class="step"><div class="step-num">2</div><div class="step-text">Open <strong>SQL Editor</strong> and run the setup SQL (ask Claude for the full script if needed).</div></div>
-    </div>
-  </div>
-  <div class="setup-card">
-    <h2>Step 2 — Paste your API keys</h2>
-    <div class="setup-steps">
-      <div class="step"><div class="step-num">3</div><div class="step-text">In Supabase go to <strong>Project Settings → API</strong>. Copy <code>Project URL</code> and <code>anon public</code> key.</div></div>
+      <div class="step"><div class="step-num">1</div><div class="step-text">In Supabase go to <strong>Project Settings → API</strong>.</div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-text">Copy your <code>Project URL</code> and <code>anon public</code> key below.</div></div>
     </div>
     <div class="s-field"><label>Project URL</label><input type="text" id="setup-url" placeholder="https://xxxxxxxxxxxx.supabase.co"/></div>
     <div class="s-field"><label>Anon Public Key</label><input type="text" id="setup-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9…"/></div>
@@ -215,7 +248,10 @@
           <button class="btn btn-primary" id="add-btn" onclick="addDinner()">+ Add Dinner</button>
         </div>
       </div>
-      <div class="section-label">Your dinners</div>
+      <div class="library-toolbar">
+        <div class="section-label" style="margin-bottom:0;flex:1">Your dinners</div>
+        <button class="btn btn-ghost" id="fav-filter-btn" onclick="toggleFavFilter()">⭐ Favorites only</button>
+      </div>
       <div id="dinner-grid"></div>
     </div>
 
@@ -238,7 +274,7 @@
   </main>
 </div>
 
-<!-- ══ PICK MODAL ══════════════════════════════════════════ -->
+<!-- ══ PICK MODAL ═════════════════════════════════════════ -->
 <div class="modal-overlay" id="pick-modal" onclick="closeModal(event)">
   <div class="modal">
     <div class="modal-header">
@@ -264,8 +300,9 @@
   let SB_URL = localStorage.getItem(K_URL) || '';
   let SB_KEY = localStorage.getItem(K_KEY) || '';
   let dinners = [];
-  let currentWeek = []; // array of dinner objects (5)
-  let pickingIndex = -1; // which day slot is being replaced
+  let currentWeek = [];
+  let pickingIndex = -1;
+  let showFavOnly = false;
 
   // ── Supabase helper ──────────────────────────────────────
   async function sb(path, method = 'GET', body = null, qs = '') {
@@ -281,6 +318,22 @@
     if (!res.ok) throw new Error(await res.text());
     const t = await res.text();
     return t ? JSON.parse(t) : null;
+  }
+
+  // ── Claude API helper ────────────────────────────────────
+  async function askClaude(prompt) {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    if (!res.ok) throw new Error('Claude API error');
+    const data = await res.json();
+    return data.content.map(b => b.text || '').join('');
   }
 
   // ── Setup ────────────────────────────────────────────────
@@ -311,7 +364,6 @@
     }
   }
   function resetSetup() { if (!confirm('Change connection settings?')) return; showSetup(); }
-
   window.addEventListener('DOMContentLoaded', () => {
     if (SB_URL && SB_KEY) launchApp(); else showSetup();
   });
@@ -330,6 +382,7 @@
       renderLibrary();
     } catch(e) { showToast('Error loading dinners', true); }
   }
+
   async function addDinner() {
     const nameEl = document.getElementById('input-name');
     const noteEl = document.getElementById('input-note');
@@ -338,7 +391,7 @@
     const btn = document.getElementById('add-btn');
     btn.disabled = true; btn.textContent = 'Adding…';
     try {
-      const [row] = await sb('dinners', 'POST', { name, note: note||null });
+      const [row] = await sb('dinners', 'POST', { name, note: note||null, is_favorite: false, ingredients: [] });
       dinners.unshift(row);
       nameEl.value = ''; noteEl.value = '';
       renderLibrary();
@@ -347,6 +400,7 @@
     btn.disabled = false; btn.textContent = '+ Add Dinner';
     nameEl.focus();
   }
+
   async function deleteDinner(id) {
     if (!confirm('Remove this dinner?')) return;
     try {
@@ -356,6 +410,65 @@
       showToast('Removed.');
     } catch(e) { showToast('Error deleting', true); }
   }
+
+  async function toggleFavorite(id) {
+    const d = dinners.find(x => x.id === id);
+    if (!d) return;
+    const newVal = !d.is_favorite;
+    try {
+      await sb('dinners', 'PATCH', { is_favorite: newVal }, `?id=eq.${id}`);
+      d.is_favorite = newVal;
+      renderLibrary();
+      showToast(newVal ? '⭐ Added to favorites' : 'Removed from favorites');
+    } catch(e) { showToast('Error updating', true); }
+  }
+
+  function toggleFavFilter() {
+    showFavOnly = !showFavOnly;
+    document.getElementById('fav-filter-btn').classList.toggle('active-filter', showFavOnly);
+    renderLibrary();
+  }
+
+  // ── Ingredient extraction ────────────────────────────────
+  async function extractIngredients(id) {
+    const d = dinners.find(x => x.id === id);
+    if (!d || !d.note) return;
+    const btn = document.getElementById(`extract-${id}`);
+    if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner-sm"></span> Extracting…'; }
+
+    try {
+      // Fetch the recipe page text via a CORS proxy approach — ask Claude with the URL
+      const prompt = `Please visit this recipe URL and extract ONLY the ingredients list as a JSON array of strings. Each string should be one ingredient with its quantity (e.g. "2 cups flour", "1 tsp salt"). Return ONLY a valid JSON array, nothing else, no markdown, no explanation.
+
+URL: ${d.note}
+
+If you cannot access the URL or it does not contain a recipe, return an empty array: []`;
+
+      const raw = await askClaude(prompt);
+      let ingredients = [];
+      try {
+        const cleaned = raw.replace(/```json|```/g,'').trim();
+        ingredients = JSON.parse(cleaned);
+        if (!Array.isArray(ingredients)) ingredients = [];
+      } catch(e) { ingredients = []; }
+
+      if (!ingredients.length) {
+        showToast('Could not extract ingredients from that link.', true);
+        if (btn) { btn.disabled = false; btn.innerHTML = '✦ Extract Ingredients'; }
+        return;
+      }
+
+      await sb('dinners', 'PATCH', { ingredients }, `?id=eq.${id}`);
+      d.ingredients = ingredients;
+      renderLibrary();
+      showToast(`Extracted ${ingredients.length} ingredients!`);
+    } catch(e) {
+      showToast('Extraction failed — try again.', true);
+      if (btn) { btn.disabled = false; btn.innerHTML = '✦ Extract Ingredients'; }
+    }
+  }
+
+  // ── Render helpers ───────────────────────────────────────
   function isUrl(s) { return s && (s.startsWith('http://')||s.startsWith('https://')); }
   function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
   function renderNote(n) {
@@ -363,21 +476,59 @@
     if (isUrl(n)) return `<a href="${esc(n)}" target="_blank" rel="noopener">View Recipe ↗</a>`;
     return esc(n);
   }
+  function renderIngredientsList(id, ingredients) {
+    if (!ingredients || !ingredients.length) return '';
+    return `
+      <button class="ingredients-toggle" id="itoggle-${id}" onclick="toggleIngredients('${id}')">
+        <span class="arrow">▾</span> ${ingredients.length} ingredients
+      </button>
+      <div class="ingredients-block" id="iblock-${id}">
+        <ul class="ingredients-list">
+          ${ingredients.map(i => `<li>${esc(i)}</li>`).join('')}
+        </ul>
+      </div>`;
+  }
+
+  function toggleIngredients(id) {
+    const block = document.getElementById(`iblock-${id}`);
+    const toggle = document.getElementById(`itoggle-${id}`);
+    if (!block) return;
+    const open = block.classList.toggle('open');
+    toggle.classList.toggle('open', open);
+  }
+
   function renderLibrary() {
     const grid = document.getElementById('dinner-grid');
     document.getElementById('count-badge').textContent = dinners.length;
-    if (!dinners.length) {
-      grid.innerHTML = `<div class="empty-state"><div class="icon">🍽️</div><p>No dinners yet.<br>Add some above to build your library.</p></div>`;
+    let list = showFavOnly ? dinners.filter(d => d.is_favorite) : dinners;
+    if (!list.length) {
+      grid.innerHTML = showFavOnly
+        ? `<div class="empty-state"><div class="icon">⭐</div><p>No favorites yet.<br>Star a dinner to add it here.</p></div>`
+        : `<div class="empty-state"><div class="icon">🍽️</div><p>No dinners yet.<br>Add some above to build your library.</p></div>`;
       return;
     }
-    grid.innerHTML = dinners.map(d => `
-      <div class="dinner-card">
-        <div class="dinner-card-top">
-          <div class="dinner-name">${esc(d.name)}</div>
-          <button class="btn btn-danger" onclick="deleteDinner('${d.id}')">✕</button>
-        </div>
-        ${d.note ? `<div class="dinner-note">${renderNote(d.note)}</div>` : ''}
-      </div>`).join('');
+    grid.innerHTML = list.map(d => {
+      const hasIngredients = d.ingredients && d.ingredients.length > 0;
+      const hasLink = isUrl(d.note);
+      return `
+        <div class="dinner-card${d.is_favorite?' is-favorite':''}">
+          <div class="dinner-card-top">
+            <div class="dinner-card-top-left">
+              <button class="star-btn${d.is_favorite?' starred':''}" onclick="toggleFavorite('${d.id}')" title="${d.is_favorite?'Unfavorite':'Favorite'}">${d.is_favorite?'★':'☆'}</button>
+              <div class="dinner-name">${esc(d.name)}</div>
+            </div>
+            <div class="card-actions">
+              <button class="btn btn-danger" onclick="deleteDinner('${d.id}')">✕</button>
+            </div>
+          </div>
+          ${d.note ? `<div class="dinner-note">${renderNote(d.note)}</div>` : ''}
+          <div class="card-footer">
+            ${hasIngredients ? renderIngredientsList(d.id, d.ingredients) : ''}
+            ${hasLink && !hasIngredients ? `<button class="extract-btn" id="extract-${d.id}" onclick="extractIngredients('${d.id}')">✦ Extract Ingredients</button>` : ''}
+            ${hasLink && hasIngredients ? `<button class="extract-btn" id="extract-${d.id}" onclick="extractIngredients('${d.id}')">↺ Re-extract</button>` : ''}
+          </div>
+        </div>`;
+    }).join('');
   }
 
   // ── Week ─────────────────────────────────────────────────
@@ -399,28 +550,23 @@
       const rows = await sb('last_week', 'GET', null, '?id=eq.1');
       (rows?.[0]?.dinner_ids||[]).forEach(id => lastIds.add(id));
     } catch(e) {}
-
     let pool = dinners.filter(d => !lastIds.has(d.id));
     if (pool.length < 5) pool = [...dinners];
     shuffle(pool);
     const picked = pool.slice(0,5);
-
     try {
       await sb('last_week', 'PATCH', { dinner_ids: picked.map(d=>d.id) }, '?id=eq.1');
-      // Save to history
       await sb('week_history', 'POST', {
         meals: picked.map((d,i) => ({ day: DAYS[i], id: d.id, name: d.name, note: d.note||null }))
       });
       currentWeek = picked;
       renderWeek();
       showToast('New week generated ✦');
-      // refresh history badge quietly
       loadHistoryBadge();
     } catch(e) { showToast('Error saving week', true); }
     btn.disabled = false; btn.textContent = '✦ Generate Week';
   }
 
-  // Replace a single day — random swap
   async function randomReplace(idx) {
     const currentIds = new Set(currentWeek.map(d=>d.id));
     const pool = dinners.filter(d => !currentIds.has(d.id));
@@ -432,7 +578,6 @@
     showToast(`Swapped to "${pick.name}"`);
   }
 
-  // Replace a single day — manual pick
   function openPickModal(idx) {
     pickingIndex = idx;
     document.getElementById('modal-sub').textContent = `Replacing ${DAYS[idx]}`;
@@ -441,10 +586,7 @@
     document.getElementById('pick-modal').classList.add('open');
     setTimeout(() => document.getElementById('modal-search').focus(), 100);
   }
-  function closePickModal() {
-    document.getElementById('pick-modal').classList.remove('open');
-    pickingIndex = -1;
-  }
+  function closePickModal() { document.getElementById('pick-modal').classList.remove('open'); pickingIndex = -1; }
   function closeModal(e) { if (e.target === document.getElementById('pick-modal')) closePickModal(); }
 
   function filterModal() {
@@ -456,8 +598,11 @@
     list.innerHTML = filtered.map(d => {
       const isCurrent = currentIds.has(d.id);
       return `<div class="modal-item${isCurrent?' current':''}" onclick="${isCurrent?'':'pickDinner(\''+d.id+'\')'}">
-        <div class="modal-item-name">${esc(d.name)}${isCurrent?' <span style="font-size:0.7rem;color:var(--text-dim)">(in use)</span>':''}</div>
-        ${d.note ? `<div class="modal-item-note">${isUrl(d.note)?'Has recipe link':esc(d.note)}</div>` : ''}
+        <span class="modal-star${d.is_favorite?' starred':''}">${d.is_favorite?'★':'☆'}</span>
+        <div class="modal-item-info">
+          <div class="modal-item-name">${esc(d.name)}${isCurrent?' <span style="font-size:0.7rem;color:var(--text-dim)">(in use)</span>':''}</div>
+          ${d.note ? `<div class="modal-item-note">${isUrl(d.note)?'Has recipe link':esc(d.note)}</div>` : ''}
+        </div>
       </div>`;
     }).join('');
   }
@@ -474,9 +619,8 @@
   }
 
   async function saveCurrentWeek() {
-    try {
-      await sb('last_week', 'PATCH', { dinner_ids: currentWeek.map(d=>d.id) }, '?id=eq.1');
-    } catch(e) { showToast('Error saving change', true); }
+    try { await sb('last_week', 'PATCH', { dinner_ids: currentWeek.map(d=>d.id) }, '?id=eq.1'); }
+    catch(e) { showToast('Error saving change', true); }
   }
 
   function renderWeek() {
@@ -491,17 +635,34 @@
     }
     info.innerHTML = `<strong class="week-accent">Mon–Fri</strong> is planned — swap any meal with 🔀 or pick manually.`;
     copyBtn.style.display = '';
-    container.innerHTML = currentWeek.map((d,i) => `
-      <div class="week-day" style="animation-delay:${i*.06}s">
-        <div class="day-label">${DAYS[i]}</div>
-        <div class="day-divider"></div>
-        <div class="day-meal">${esc(d.name)}</div>
-        ${d.note ? `<div class="day-note">${renderNote(d.note)}</div>` : ''}
-        <div class="day-actions">
-          <button class="btn-icon" onclick="randomReplace(${i})" title="Random swap">🔀</button>
-          <button class="btn-icon" onclick="openPickModal(${i})" title="Pick manually">≡</button>
-        </div>
-      </div>`).join('');
+    container.innerHTML = currentWeek.map((d,i) => {
+      const hasIngredients = d.ingredients && d.ingredients.length > 0;
+      const wid = `week-${i}`;
+      return `
+        <div class="week-day-wrap">
+          <div class="week-day${hasIngredients?'':' week-day-alone'}">
+            <div class="day-label">${DAYS[i]}</div>
+            <div class="day-divider"></div>
+            <div class="day-meal">${esc(d.name)}${d.is_favorite?' <span style="font-size:0.75rem">⭐</span>':''}</div>
+            ${d.note ? `<div class="day-note">${renderNote(d.note)}</div>` : ''}
+            <div class="day-actions">
+              ${hasIngredients ? `<button class="btn-icon" onclick="toggleWeekIngredients('${wid}')" title="Ingredients">🧾</button>` : ''}
+              <button class="btn-icon" onclick="randomReplace(${i})" title="Random swap">🔀</button>
+              <button class="btn-icon" onclick="openPickModal(${i})" title="Pick manually">≡</button>
+            </div>
+          </div>
+          ${hasIngredients ? `
+            <div class="week-day-ingredients" id="${wid}">
+              <ul class="ingredients-list" style="padding-top:2px">
+                ${d.ingredients.map(ing => `<li>${esc(ing)}</li>`).join('')}
+              </ul>
+            </div>` : ''}
+        </div>`;
+    }).join('');
+  }
+
+  function toggleWeekIngredients(wid) {
+    document.getElementById(wid)?.classList.toggle('open');
   }
 
   function copyWeek() {
@@ -524,7 +685,7 @@
         const date = new Date(row.created_at);
         const dateStr = date.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
         const meals = Array.isArray(row.meals) ? row.meals : [];
-        const preview = meals.slice(0,3).map(m=>m.name).join(', ') + (meals.length>3?'…':'');
+        const preview = meals.slice(0,3).map(m=>m.name).join(', ')+(meals.length>3?'…':'');
         return `
           <div class="history-card">
             <div class="history-header" onclick="toggleHistory('h${ri}')">
@@ -535,11 +696,11 @@
               <div class="history-toggle" id="toggle-h${ri}">▾</div>
             </div>
             <div class="history-meals" id="meals-h${ri}">
-              ${meals.map(m => `
+              ${meals.map(m=>`
                 <div class="history-meal-row">
                   <div class="history-day">${esc(m.day||'')}</div>
                   <div class="history-meal-name">${esc(m.name||'')}</div>
-                  ${m.note ? `<div class="history-meal-note">${renderNote(m.note)}</div>` : ''}
+                  ${m.note?`<div class="history-meal-note">${renderNote(m.note)}</div>`:''}
                 </div>`).join('')}
             </div>
           </div>`;
@@ -548,15 +709,13 @@
   }
 
   function toggleHistory(id) {
-    const meals = document.getElementById('meals-'+id);
-    const toggle = document.getElementById('toggle-'+id);
-    const open = meals.classList.toggle('open');
-    toggle.classList.toggle('open', open);
+    document.getElementById('meals-'+id)?.classList.toggle('open');
+    document.getElementById('toggle-'+id)?.classList.toggle('open');
   }
 
   async function loadHistoryBadge() {
     try {
-      const rows = await sb('week_history', 'GET', null, '?select=id');
+      const rows = await sb('week_history','GET',null,'?select=id');
       document.getElementById('history-badge').textContent = rows.length;
     } catch(e) {}
   }
@@ -570,20 +729,14 @@
     if (name === 'history') loadHistory();
   }
 
-  // ── Utilities ────────────────────────────────────────────
+  // ── Utils ────────────────────────────────────────────────
   function shuffle(arr) {
-    for (let i=arr.length-1;i>0;i--) {
-      const j=Math.floor(Math.random()*(i+1));
-      [arr[i],arr[j]]=[arr[j],arr[i]];
-    }
+    for (let i=arr.length-1;i>0;i--) { const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; }
   }
   function showToast(msg, isErr=false) {
     const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.className = 'toast'+(isErr?' error':'');
-    t.classList.add('show');
-    clearTimeout(t._t);
-    t._t = setTimeout(()=>t.classList.remove('show'), 2600);
+    t.textContent = msg; t.className = 'toast'+(isErr?' error':''); t.classList.add('show');
+    clearTimeout(t._t); t._t = setTimeout(()=>t.classList.remove('show'), 2800);
   }
 
   // ── Keyboard ─────────────────────────────────────────────
