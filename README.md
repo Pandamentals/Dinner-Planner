@@ -6,7 +6,8 @@ A shared weekly dinner planner for two. Add dinners to a library, generate a Mon
 
 - **Library** — store dinners with a name, recipe link or note, serving size, and ingredients
 - **This Week** — generate a random Mon–Fri plan that avoids last week’s picks, swap any meal randomly or pick manually
-- **Shopping List** — ingredients grouped by meal with checkboxes to tick off while shopping
+- **Shopping List** — ingredients grouped by meal with checkboxes to tick off while shopping; copy to clipboard with `[ ]` checkmarks ready for any notes app
+- **Pantry** — save staple items (olive oil, garlic, salt…) that are automatically excluded when you copy your shopping list
 - **History** — every generated week saved by date for reference
 - **Favorites** — star dinners to filter and highlight them
 - **Skip toggle** — exclude dinners from generation without deleting them
@@ -20,6 +21,7 @@ A shared weekly dinner planner for two. Add dinners to a library, generate a Mon
 |Hosting |GitHub Pages                               |
 |Frontend|Single HTML file (vanilla JS, no framework)|
 |Database|Supabase (PostgreSQL)                      |
+|Pantry  |localStorage (per device, no DB needed)    |
 
 ## Setup
 
@@ -80,8 +82,11 @@ Anyone you share the URL with will need to go through the same one-time setup st
 ## Usage Tips
 
 - **Ingredients** — open any dinner card, click *+ Add Ingredients*, type or paste a list (multiple lines supported for bulk add)
+- **Pantry** — add staples once; they’re silently excluded when you copy the shopping list. Uses partial matching so `"garlic"` will exclude `"2 cloves garlic"`
+- **Copy shopping list** — pastes a clean `[ ]` checklist grouped by meal, with a week date header. Most notes apps (Apple Notes, Notion, Obsidian, Bear) render `[ ]` as tappable checkboxes
+- **Copy week** — pastes a clean Mon–Fri summary with notes in parentheses, URLs excluded
 - **Skip toggle** — use this for meals you want a break from without removing them permanently
-- **Shopping list** — checks are saved per device so two people can shop independently
+- **Shopping list checks** — saved per device so two people can shop independently
 - **Reverting** — every deploy is a GitHub commit, use the file history to roll back if needed
 
 ## Versioning
