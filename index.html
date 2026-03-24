@@ -509,17 +509,32 @@
   }
 
   // ── Feature 1: Extract Ingredients from URL ───────────────
+  async function fetchViaProxy(url) {
+    const encoded = encodeURIComponent(url);
+    const proxies = [
+      { url: `https://api.allorigins.win/get?url=${encoded}`, extract: async r => { const d = await r.json(); return d.contents; } },
+      { url: `https://corsproxy.io/?${encoded}`, extract: async r => r.text() },
+      { url: `https://api.codetabs.com/v1/proxy?quest=${encoded}`, extract: async r => r.text() },
+    ];
+    for (const proxy of proxies) {
+      try {
+        const res = await fetch(proxy.url, { signal: AbortSignal.timeout(8000) });
+        if (!res.ok) continue;
+        const text = await proxy.extract(res);
+        if (text && text.length > 200) return text;
+      } catch(e) { continue; }
+    }
+    throw new Error('Could not fetch the page. The site may block external access — try copying the ingredients manually.');
+  }
+
   async function extractIngredientsFromUrl(url) {
-    // 1. Fetch the page
-    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+    // 1. Fetch via proxy fallback chain
     let pageText;
     try {
-      const res = await fetch(proxyUrl);
-      const data = await res.json();
-      if (!data.contents) throw new Error('Empty response');
-      pageText = stripHtml(data.contents);
+      const raw = await fetchViaProxy(url);
+      pageText = stripHtml(raw);
     } catch(e) {
-      throw new Error('Could not fetch the URL. Make sure it\'s a public recipe page.');
+      throw new Error(e.message);
     }
 
     // 2. Send clean text to Claude
