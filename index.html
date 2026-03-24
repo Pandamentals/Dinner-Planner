@@ -11,7 +11,7 @@
       --bg: #0f0e0c; --surface: #1a1815; --surface2: #242118; --border: #2e2b24;
       --accent: #e8c47a; --accent2: #c4a25a; --text: #f0ebe0;
       --text-muted: #7a7060; --text-dim: #4a4438; --danger: #c46060;
-      --star: #e8c47a; --radius: 12px;
+      --star: #e8c47a; --radius: 12px; --ai: #7a9ee8;
     }
     body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 0 0 80px; }
 
@@ -68,6 +68,13 @@
     .star-btn.starred { color: var(--star); }
     .extract-btn { font-size: 0.72rem; color: var(--accent2); background: none; border: 1px solid var(--border); border-radius: 6px; padding: 3px 9px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
     .extract-btn:hover:not(:disabled) { background: rgba(232,196,122,0.08); border-color: var(--accent2); }
+
+    /* ── AI BUTTON ── */
+    .btn-ai { font-size: 0.72rem; color: var(--ai); background: rgba(122,158,232,0.06); border: 1px solid rgba(122,158,232,0.25); border-radius: 6px; padding: 3px 9px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.15s; display: inline-flex; align-items: center; gap: 4px; }
+    .btn-ai:hover:not(:disabled) { background: rgba(122,158,232,0.12); border-color: rgba(122,158,232,0.5); }
+    .btn-ai:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-ai-lg { font-size: 0.82rem; padding: 8px 16px; border-radius: 8px; }
+    .ai-badge { font-size: 0.62rem; background: rgba(122,158,232,0.15); color: var(--ai); border: 1px solid rgba(122,158,232,0.2); border-radius: 4px; padding: 1px 5px; letter-spacing: 0.06em; text-transform: uppercase; font-weight: 600; }
 
     /* ── SKIP TOGGLE ── */
     .skip-toggle { display: flex; align-items: center; gap: 6px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
@@ -177,6 +184,15 @@
     .shop-progress { font-size: 0.72rem; color: var(--text-dim); }
     .shop-progress span { color: var(--accent2); font-weight: 500; }
 
+    /* ── AI CATEGORIZED SHOP ── */
+    .shop-cat-group { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    .shop-cat-header { padding: 11px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+    .shop-cat-icon { font-size: 1rem; }
+    .shop-cat-name { font-family: 'Playfair Display', serif; font-size: 0.9rem; color: var(--text); flex: 1; }
+    .shop-cat-count { font-size: 0.7rem; color: var(--text-dim); }
+    .ai-shop-banner { display: flex; align-items: center; gap: 10px; background: rgba(122,158,232,0.06); border: 1px solid rgba(122,158,232,0.2); border-radius: 10px; padding: 10px 16px; margin-bottom: 20px; font-size: 0.78rem; color: var(--ai); }
+    .ai-shop-banner .ai-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--ai); flex-shrink: 0; }
+
     /* ── MODALS ── */
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 50; display: none; align-items: center; justify-content: center; padding: 20px; }
     .modal-overlay.open { display: flex; animation: fadeIn 0.15s ease; }
@@ -221,11 +237,16 @@
     .ing-add-btn:hover { border-color: var(--accent2); color: var(--accent); }
     .parsing-state { display: flex; align-items: center; gap: 10px; padding: 16px; background: var(--surface2); border-radius: 8px; font-size: 0.85rem; color: var(--text-muted); }
 
-    /* ── PANTRY ── */
-    .pantry-grid { display: flex; flex-direction: column; gap: 6px; }
-    .pantry-item { display: flex; align-items: center; justify-content: space-between; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px 16px; font-size: 0.88rem; color: var(--text); }
-    .pantry-item-name { flex: 1; }
-    .pantry-item-hint { font-size: 0.72rem; color: var(--text-dim); margin-left: 8px; }
+    /* ── AI URL EXTRACT SECTION ── */
+    .ai-extract-section { background: rgba(122,158,232,0.04); border: 1px solid rgba(122,158,232,0.18); border-radius: 10px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; }
+    .ai-extract-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ai); font-weight: 600; display: flex; align-items: center; gap: 6px; }
+    .ai-extract-row { display: flex; gap: 8px; }
+    .ai-extract-input { flex: 1; background: var(--surface2); border: 1px solid rgba(122,158,232,0.25); border-radius: 7px; padding: 9px 12px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.83rem; outline: none; transition: border-color 0.2s; }
+    .ai-extract-input:focus { border-color: var(--ai); }
+    .ai-extract-input::placeholder { color: var(--text-dim); }
+    .ai-status { font-size: 0.75rem; color: var(--text-dim); display: flex; align-items: center; gap: 6px; min-height: 18px; }
+    .ai-status.success { color: #7ac4a0; }
+    .ai-status.error { color: var(--danger); }
 
     /* ── HISTORY ── */
     .history-list { display: flex; flex-direction: column; gap: 16px; }
@@ -251,6 +272,7 @@
     .loading { text-align: center; padding: 40px; color: var(--text-dim); font-size: 0.9rem; }
     .spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; margin-right: 6px; vertical-align: middle; }
     .spinner-sm { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0; }
+    .spinner-ai { display: inline-block; width: 12px; height: 12px; border: 2px solid rgba(122,158,232,0.2); border-top-color: var(--ai); border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0; }
     @keyframes spin { to { transform: rotate(360deg); } }
     .count-badge { display: inline-block; background: var(--surface2); border: 1px solid var(--border); color: var(--text-muted); font-size: 0.7rem; padding: 2px 8px; border-radius: 20px; margin-left: 8px; vertical-align: middle; }
     .toast { position: fixed; bottom: 28px; right: 28px; background: var(--surface); border: 1px solid var(--accent2); color: var(--accent); padding: 12px 20px; border-radius: 10px; font-size: 0.85rem; font-weight: 500; z-index: 200; opacity: 0; transform: translateY(10px); transition: all 0.25s; pointer-events: none; max-width: 300px; }
@@ -277,6 +299,7 @@
     </div>
     <div class="s-field"><label>Project URL</label><input type="text" id="setup-url" placeholder="https://xxxxxxxxxxxx.supabase.co"/></div>
     <div class="s-field"><label>Anon Public Key</label><input type="text" id="setup-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9…"/></div>
+    <div class="s-field"><label>Anthropic API Key <span class="ai-badge">AI Features</span></label><input type="text" id="setup-ai-key" placeholder="sk-ant-…"/></div>
     <div id="setup-error" class="setup-error">Could not connect — check your URL and key.</div>
     <div style="display:flex;justify-content:flex-end;margin-top:16px">
       <button class="btn btn-primary" id="setup-btn" onclick="saveSetup()">Connect & Launch →</button>
@@ -295,7 +318,6 @@
     <div class="tab active" onclick="switchTab('library')">Library <span class="count-badge" id="count-badge">0</span></div>
     <div class="tab" onclick="switchTab('week')">This Week</div>
     <div class="tab" onclick="switchTab('shop')">Shopping</div>
-    <div class="tab" onclick="switchTab('pantry')">Pantry <span class="count-badge" id="pantry-badge">0</span></div>
     <div class="tab" onclick="switchTab('history')">History <span class="count-badge" id="history-badge">0</span></div>
   </div>
   <main>
@@ -348,28 +370,9 @@
         <div class="shop-info" id="shop-info">Shopping list for this week's meals.</div>
         <button class="btn btn-ghost" onclick="clearShopChecks()">Uncheck All</button>
         <button class="btn btn-ghost" onclick="copyShopList()">Copy List</button>
+        <button class="btn-ai btn-ai-lg" id="ai-group-btn" onclick="aiGroupShopList()" title="Group by store category using AI">✦ Group by Category</button>
       </div>
       <div id="shop-content"></div>
-    </div>
-
-    <!-- PANTRY -->
-    <div class="panel" id="panel-pantry">
-      <div class="shop-controls">
-        <div class="shop-info">Items here are automatically excluded from your copied shopping list.</div>
-      </div>
-      <div class="add-form" style="margin-bottom:24px">
-        <div class="section-label">Add a pantry staple</div>
-        <div class="form-row">
-          <div class="form-field">
-            <label>Item name</label>
-            <input type="text" id="pantry-input" placeholder="e.g. olive oil, garlic, salt" maxlength="60"/>
-          </div>
-        </div>
-        <div class="form-actions">
-          <button class="btn btn-primary" onclick="addPantryItem()">+ Add Item</button>
-        </div>
-      </div>
-      <div id="pantry-list"></div>
     </div>
 
     <!-- HISTORY -->
@@ -412,10 +415,13 @@
 
 <script>
   const DAYS = ['Mon','Tue','Wed','Thu','Fri'];
-  const K_URL = 'dp_sb_url', K_KEY = 'dp_sb_key', K_SHOP = 'dp_shop_checks', K_PANTRY = 'dp_pantry';
+  const K_URL = 'dp_sb_url', K_KEY = 'dp_sb_key', K_SHOP = 'dp_shop_checks', K_AI = 'dp_ai_key';
+  const AI_MODEL = 'claude-haiku-4-5-20251001';
+  const AI_MAX_CHARS = 12000; // ~3k tokens — hard cap before sending to Claude
 
   let SB_URL = localStorage.getItem(K_URL) || '';
   let SB_KEY = localStorage.getItem(K_KEY) || '';
+  let AI_KEY = localStorage.getItem(K_AI) || '';
   let dinners = [];
   let currentWeek = [];
   let pickingIndex = -1;
@@ -423,8 +429,8 @@
   let ingModalDinnerId = null;
   let editingIngredients = [];
   let shopChecks = JSON.parse(localStorage.getItem(K_SHOP) || '{}');
-  let pantryItems = JSON.parse(localStorage.getItem(K_PANTRY) || '[]');
   let editingCardId = null;
+  let aiGroupedShop = null; // null = by meal, object = ai categories
 
   // ── Supabase ─────────────────────────────────────────────
   async function sb(path, method='GET', body=null, qs='') {
@@ -442,7 +448,139 @@
     return t ? JSON.parse(t) : null;
   }
 
+  // ── Claude AI ─────────────────────────────────────────────
+  async function callClaude(systemPrompt, userContent, maxTokens=800) {
+    if (!AI_KEY) throw new Error('No Anthropic API key set. Add it in ⚙ settings.');
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': AI_KEY,
+        'anthropic-version': '2023-06-01'
+      },
+      body: JSON.stringify({
+        model: AI_MODEL,
+        max_tokens: maxTokens,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: userContent }]
+      })
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(()=>({}));
+      throw new Error(err?.error?.message || `API error ${res.status}`);
+    }
+    const data = await res.json();
+    return data.content.map(b => b.text || '').join('');
+  }
 
+  // ── HTML Stripper (keeps token count lean) ────────────────
+  function stripHtml(html) {
+    // Remove script, style, nav, footer, header, aside, iframe, noscript blocks entirely
+    html = html.replace(/<(script|style|nav|footer|header|aside|iframe|noscript|svg|form)[^>]*>[\s\S]*?<\/\1>/gi, '');
+    // Remove all remaining tags
+    html = html.replace(/<[^>]+>/g, ' ');
+    // Decode common entities
+    html = html.replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&nbsp;/g,' ').replace(/&#\d+;/g,' ');
+    // Collapse whitespace
+    html = html.replace(/\s{2,}/g, ' ').trim();
+    // Hard cap
+    if (html.length > AI_MAX_CHARS) html = html.slice(0, AI_MAX_CHARS) + '…';
+    return html;
+  }
+
+  // ── Feature 1: Extract Ingredients from URL ───────────────
+  async function extractIngredientsFromUrl(url) {
+    // 1. Fetch the page
+    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+    let pageText;
+    try {
+      const res = await fetch(proxyUrl);
+      const data = await res.json();
+      if (!data.contents) throw new Error('Empty response');
+      pageText = stripHtml(data.contents);
+    } catch(e) {
+      throw new Error('Could not fetch the URL. Make sure it\'s a public recipe page.');
+    }
+
+    // 2. Send clean text to Claude
+    const systemPrompt = `You are a recipe ingredient extractor. Given webpage text, extract ONLY the ingredients list.
+Return a JSON array of strings, one ingredient per item, e.g. ["2 cups flour","1 tsp salt"].
+Include quantities and units. Do not include instructions, notes, or anything else.
+Respond ONLY with valid JSON — no preamble, no markdown, no explanation.`;
+
+    const raw = await callClaude(systemPrompt, pageText, 600);
+
+    // 3. Parse JSON safely
+    const cleaned = raw.replace(/```json|```/g, '').trim();
+    let ingredients;
+    try {
+      ingredients = JSON.parse(cleaned);
+    } catch(e) {
+      // Try to extract JSON array if there's extra text
+      const match = cleaned.match(/\[[\s\S]*\]/);
+      if (match) ingredients = JSON.parse(match[0]);
+      else throw new Error('AI returned unexpected format');
+    }
+    if (!Array.isArray(ingredients)) throw new Error('Unexpected AI response');
+    return ingredients.filter(i => typeof i === 'string' && i.trim());
+  }
+
+  // ── Feature 2: AI Group Shopping List by Category ─────────
+  async function aiGroupShopList() {
+    const mealsWithIng = currentWeek.filter(d => d.ingredients && d.ingredients.length > 0);
+    if (!mealsWithIng.length) { showToast('No ingredients to group.'); return; }
+
+    // If already grouped, toggle back to meal view
+    if (aiGroupedShop) { aiGroupedShop = null; renderShop(); showToast('Back to meal view.'); return; }
+
+    const btn = document.getElementById('ai-group-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-ai"></span> Grouping…';
+
+    // Collect all ingredients flat
+    const allItems = [];
+    mealsWithIng.forEach(d => {
+      d.ingredients.forEach((ing, i) => {
+        allItems.push({ key: `${d.id}-${i}`, text: ing });
+      });
+    });
+
+    const systemPrompt = `You are a grocery store organizer. Given a list of ingredients, group them into store sections.
+Use these category names only: Produce, Meat & Seafood, Dairy & Eggs, Bakery, Pantry & Dry Goods, Canned & Jarred, Frozen, Beverages, Other.
+Return ONLY a JSON object mapping each ingredient key to its category, e.g. {"key1":"Produce","key2":"Meat & Seafood"}.
+No preamble, no markdown.`;
+
+    const userContent = JSON.stringify(allItems.map(i => ({ key: i.key, ingredient: i.text })));
+
+    try {
+      const raw = await callClaude(systemPrompt, userContent, 800);
+      const cleaned = raw.replace(/```json|```/g, '').trim();
+      const mapping = JSON.parse(cleaned);
+
+      // Build grouped structure
+      const groups = {};
+      allItems.forEach(item => {
+        const cat = mapping[item.key] || 'Other';
+        if (!groups[cat]) groups[cat] = [];
+        groups[cat].push(item);
+      });
+
+      // Sort categories sensibly
+      const ORDER = ['Produce','Meat & Seafood','Dairy & Eggs','Bakery','Pantry & Dry Goods','Canned & Jarred','Frozen','Beverages','Other'];
+      const sorted = {};
+      ORDER.forEach(k => { if (groups[k]) sorted[k] = groups[k]; });
+      Object.keys(groups).forEach(k => { if (!sorted[k]) sorted[k] = groups[k]; });
+
+      aiGroupedShop = sorted;
+      renderShop();
+      showToast(`Grouped into ${Object.keys(sorted).length} categories ✦`);
+    } catch(e) {
+      showToast('AI grouping failed: ' + e.message, true);
+    }
+
+    btn.disabled = false;
+    btn.innerHTML = aiGroupedShop ? '✦ View by Meal' : '✦ Group by Category';
+  }
 
   // ── Setup ────────────────────────────────────────────────
   function showSetup() {
@@ -450,18 +588,21 @@
     document.getElementById('app').style.display = 'none';
     if (SB_URL) document.getElementById('setup-url').value = SB_URL;
     if (SB_KEY) document.getElementById('setup-key').value = SB_KEY;
+    if (AI_KEY) document.getElementById('setup-ai-key').value = AI_KEY;
   }
   async function saveSetup() {
     const url = document.getElementById('setup-url').value.trim().replace(/\/$/,'');
     const key = document.getElementById('setup-key').value.trim();
+    const aiKey = document.getElementById('setup-ai-key').value.trim();
     const errEl = document.getElementById('setup-error'), btn = document.getElementById('setup-btn');
     errEl.style.display = 'none';
-    if (!url||!key) { errEl.textContent='Both fields required.'; errEl.style.display='block'; return; }
+    if (!url||!key) { errEl.textContent='Both Supabase fields required.'; errEl.style.display='block'; return; }
     btn.disabled=true; btn.textContent='Connecting…';
     try {
       SB_URL=url; SB_KEY=key;
       await sb('dinners','GET',null,'?limit=1');
       localStorage.setItem(K_URL,url); localStorage.setItem(K_KEY,key);
+      if (aiKey) { AI_KEY=aiKey; localStorage.setItem(K_AI,aiKey); }
       btn.disabled=false; btn.textContent='Connect & Launch →';
       launchApp();
     } catch(e) {
@@ -476,7 +617,6 @@
     document.getElementById('setup-screen').style.display='none';
     document.getElementById('app').style.display='block';
     loadDinners(); loadWeek();
-    document.getElementById('pantry-badge').textContent = pantryItems.length;
   }
 
   // ── Library ──────────────────────────────────────────────
@@ -532,11 +672,7 @@
   }
 
   // ── Edit dinner ──────────────────────────────────────────
-  function startEdit(id) {
-    editingCardId = id;
-    renderLibrary();
-    setTimeout(()=>document.getElementById(`edit-name-${id}`)?.focus(), 50);
-  }
+  function startEdit(id) { editingCardId=id; renderLibrary(); setTimeout(()=>document.getElementById(`edit-name-${id}`)?.focus(),50); }
   function cancelEdit() { editingCardId=null; renderLibrary(); }
   async function saveEdit(id) {
     const nameEl=document.getElementById(`edit-name-${id}`);
@@ -550,9 +686,7 @@
       await sb('dinners','PATCH',{name,note,servings},`?id=eq.${id}`);
       const d=dinners.find(x=>x.id===id);
       if (d) { d.name=name; d.note=note; d.servings=servings; }
-      editingCardId=null;
-      renderLibrary(); renderWeek();
-      showToast('Saved!');
+      editingCardId=null; renderLibrary(); renderWeek(); showToast('Saved!');
     } catch(e) { showToast('Error saving',true); }
   }
 
@@ -632,42 +766,97 @@
     ingModalDinnerId=id;
     editingIngredients=d.ingredients?[...d.ingredients]:[];
     document.getElementById('ing-modal-title').textContent=d.name;
-    document.getElementById('ing-modal-sub').textContent='Add ingredients one at a time, or paste multiple lines';
+    document.getElementById('ing-modal-sub').textContent='Add manually, paste multiple lines, or extract from a recipe URL';
     renderIngModalBody();
     document.getElementById('ing-modal').classList.add('open');
   }
   function closeIngModal() { document.getElementById('ing-modal').classList.remove('open'); ingModalDinnerId=null; editingIngredients=[]; }
+
   function renderIngModalBody() {
     const body=document.getElementById('ing-modal-body');
     const hasIng=editingIngredients.length>0;
+    // Find dinner to check if it has a URL note
+    const d=dinners.find(x=>x.id===ingModalDinnerId);
+    const noteUrl = d && isUrl(d.note) ? d.note : '';
+
     body.innerHTML=`
+      <!-- AI EXTRACT SECTION -->
+      <div class="ai-extract-section">
+        <div class="ai-extract-label"><span class="ai-badge">AI</span> Extract from Recipe URL</div>
+        <div class="ai-extract-row">
+          <input class="ai-extract-input" id="ai-url-input" placeholder="Paste recipe URL here…" value="${esc(noteUrl)}" />
+          <button class="btn-ai" id="ai-extract-btn" onclick="runUrlExtract()">✦ Extract</button>
+        </div>
+        <div class="ai-status" id="ai-extract-status"></div>
+      </div>
+
       ${hasIng?`<div class="ing-edit-list" id="ing-edit-list">
         ${editingIngredients.map((ing,i)=>`<div class="ing-edit-row">
           <input class="ing-edit-input" value="${esc(ing)}" onchange="updateIngredient(${i},this.value)" onblur="updateIngredient(${i},this.value)"/>
           <button class="ing-remove-btn" onclick="removeIngredient(${i})">\u2715</button>
         </div>`).join('')}
-      </div>`:`<div style="font-size:0.82rem;color:var(--text-dim);padding:4px 0 8px">No ingredients yet.<br><span style="font-size:0.75rem">Tip: paste multiple lines at once and hit Add All.</span></div>`}
+      </div>`:`<div style="font-size:0.82rem;color:var(--text-dim);padding:4px 0 8px">No ingredients yet.<br><span style="font-size:0.75rem">Tip: use the AI extractor above or paste multiple lines below.</span></div>`}
       <div class="ing-add-row">
         <input class="ing-add-input" id="ing-new-input" placeholder="e.g. 2 cups flour  (paste multiple lines for bulk add)" onkeydown="handleIngKeydown(event)"/>
         <button class="ing-add-btn" onclick="addIngredientManual()">+ Add</button>
       </div>`;
-    setTimeout(()=>document.getElementById('ing-new-input')?.focus(), 80);
   }
+
+  async function runUrlExtract() {
+    const urlInput = document.getElementById('ai-url-input');
+    const statusEl = document.getElementById('ai-extract-status');
+    const btn = document.getElementById('ai-extract-btn');
+    const url = urlInput?.value?.trim();
+    if (!url || !isUrl(url)) { statusEl.textContent = 'Please enter a valid URL.'; statusEl.className='ai-status error'; return; }
+
+    btn.disabled = true;
+    statusEl.innerHTML = '<span class="spinner-ai"></span> Fetching & extracting…';
+    statusEl.className = 'ai-status';
+
+    try {
+      const ingredients = await extractIngredientsFromUrl(url);
+      if (!ingredients.length) throw new Error('No ingredients found on that page.');
+
+      // Merge with existing (avoid duplicates)
+      const existing = new Set(editingIngredients.map(s=>s.toLowerCase().trim()));
+      let added = 0;
+      ingredients.forEach(ing => {
+        if (!existing.has(ing.toLowerCase().trim())) {
+          editingIngredients.push(ing);
+          added++;
+        }
+      });
+
+      statusEl.textContent = `✓ Extracted ${ingredients.length} ingredients${added < ingredients.length ? ` (${ingredients.length - added} already present)` : ''}.`;
+      statusEl.className = 'ai-status success';
+      renderIngModalBody();
+      // Re-apply status since renderIngModalBody wipes it
+      setTimeout(() => {
+        const s = document.getElementById('ai-extract-status');
+        if (s) { s.textContent = `✓ Extracted ${ingredients.length} ingredients.`; s.className='ai-status success'; }
+        const u = document.getElementById('ai-url-input');
+        if (u) u.value = url;
+      }, 10);
+    } catch(e) {
+      statusEl.textContent = '✗ ' + e.message;
+      statusEl.className = 'ai-status error';
+    }
+    btn.disabled = false;
+  }
+
   function updateIngredient(i,val) { editingIngredients[i]=val; }
   function removeIngredient(i) { editingIngredients.splice(i,1); renderIngModalBody(); }
-  function handleIngKeydown(e) {
-    if (e.key==='Enter') { e.preventDefault(); addIngredientManual(); }
-  }
+  function handleIngKeydown(e) { if(e.key==='Enter'){e.preventDefault();addIngredientManual();} }
   function addIngredientManual() {
     const input=document.getElementById('ing-new-input');
     const raw=input?.value||'';
     const lines=raw.split('\n').map(s=>s.trim()).filter(Boolean);
-    if (!lines.length) return;
+    if(!lines.length) return;
     lines.forEach(l=>editingIngredients.push(l));
     renderIngModalBody();
   }
   async function saveIngredients() {
-    if (!ingModalDinnerId) return;
+    if(!ingModalDinnerId) return;
     document.querySelectorAll('.ing-edit-input').forEach((el,i)=>{ editingIngredients[i]=el.value; });
     const filtered=editingIngredients.filter(s=>s.trim());
     const btn=document.getElementById('ing-save-btn');
@@ -693,32 +882,31 @@
   }
   async function generateWeek() {
     const eligible=dinners.filter(d=>!d.skip_generate);
-    if (eligible.length<5) { showToast(`Need at least 5 includable dinners (you have ${eligible.length} — check skip toggles).`); return; }
+    if(eligible.length<5){showToast(`Need at least 5 includable dinners (you have ${eligible.length} — check skip toggles).`);return;}
     const btn=document.getElementById('gen-btn');
     btn.disabled=true; btn.textContent='Generating…';
     let lastIds=new Set();
-    try { const rows=await sb('last_week','GET',null,'?id=eq.1'); (rows?.[0]?.dinner_ids||[]).forEach(id=>lastIds.add(id)); } catch(e){}
+    try{const rows=await sb('last_week','GET',null,'?id=eq.1');(rows?.[0]?.dinner_ids||[]).forEach(id=>lastIds.add(id));}catch(e){}
     let pool=eligible.filter(d=>!lastIds.has(d.id));
-    if (pool.length<5) pool=[...eligible];
+    if(pool.length<5) pool=[...eligible];
     shuffle(pool);
     const picked=pool.slice(0,5);
     try {
       await sb('last_week','PATCH',{dinner_ids:picked.map(d=>d.id)},'?id=eq.1');
       await sb('week_history','POST',{meals:picked.map((d,i)=>({day:DAYS[i],id:d.id,name:d.name,note:d.note||null}))});
       currentWeek=picked;
-      // clear shop checks for new week
-      shopChecks={};
-      localStorage.setItem(K_SHOP,JSON.stringify(shopChecks));
+      shopChecks={}; localStorage.setItem(K_SHOP,JSON.stringify(shopChecks));
+      aiGroupedShop=null;
       renderWeek(); renderShop();
       showToast('New week generated ✦');
       loadHistoryBadge();
-    } catch(e){ showToast('Error saving week',true); }
+    } catch(e){showToast('Error saving week',true);}
     btn.disabled=false; btn.textContent='✦ Generate Week';
   }
   async function randomReplace(idx) {
     const currentIds=new Set(currentWeek.map(d=>d.id));
     const pool=dinners.filter(d=>!currentIds.has(d.id)&&!d.skip_generate);
-    if (!pool.length) { showToast('No other dinners available to swap in!'); return; }
+    if(!pool.length){showToast('No other dinners available to swap in!');return;}
     currentWeek[idx]=pool[Math.floor(Math.random()*pool.length)];
     await saveCurrentWeek(); renderWeek(); renderShop();
     showToast(`Swapped to "${currentWeek[idx].name}"`);
@@ -731,14 +919,14 @@
     document.getElementById('pick-modal').classList.add('open');
     setTimeout(()=>document.getElementById('modal-search').focus(),100);
   }
-  function closePickModal() { document.getElementById('pick-modal').classList.remove('open'); pickingIndex=-1; }
-  function closeModalOverlay(e,id) { if(e.target===document.getElementById(id)){if(id==='pick-modal')closePickModal();else if(id==='ing-modal')closeIngModal();} }
+  function closePickModal(){document.getElementById('pick-modal').classList.remove('open');pickingIndex=-1;}
+  function closeModalOverlay(e,id){if(e.target===document.getElementById(id)){if(id==='pick-modal')closePickModal();else if(id==='ing-modal')closeIngModal();}}
   function filterModal() {
     const q=document.getElementById('modal-search').value.toLowerCase();
     const currentIds=new Set(currentWeek.map(d=>d.id));
     const filtered=dinners.filter(d=>d.name.toLowerCase().includes(q)&&!d.skip_generate);
     const list=document.getElementById('modal-list');
-    if (!filtered.length){list.innerHTML=`<div style="padding:20px;text-align:center;color:var(--text-dim);font-size:0.85rem">No matches</div>`;return;}
+    if(!filtered.length){list.innerHTML=`<div style="padding:20px;text-align:center;color:var(--text-dim);font-size:0.85rem">No matches</div>`;return;}
     list.innerHTML=filtered.map(d=>{
       const isCurrent=currentIds.has(d.id);
       return `<div class="modal-item${isCurrent?' current':''}" onclick="${isCurrent?'':'pickDinner(\''+d.id+'\')'}">
@@ -751,7 +939,7 @@
     }).join('');
   }
   async function pickDinner(id) {
-    if (pickingIndex<0) return;
+    if(pickingIndex<0) return;
     const dinner=dinners.find(d=>d.id===id); if(!dinner) return;
     currentWeek[pickingIndex]=dinner;
     closePickModal();
@@ -759,14 +947,14 @@
     showToast(`Set to "${dinner.name}"`);
   }
   async function saveCurrentWeek() {
-    try { await sb('last_week','PATCH',{dinner_ids:currentWeek.map(d=>d.id)},'?id=eq.1'); }
-    catch(e){ showToast('Error saving change',true); }
+    try{await sb('last_week','PATCH',{dinner_ids:currentWeek.map(d=>d.id)},'?id=eq.1');}
+    catch(e){showToast('Error saving change',true);}
   }
   function renderWeek() {
     const container=document.getElementById('week-plan');
     const info=document.getElementById('week-info');
     const copyBtn=document.getElementById('copy-btn');
-    if (!currentWeek.length) {
+    if(!currentWeek.length){
       container.innerHTML=`<div class="empty-state"><div class="icon">📅</div><p>Hit <strong>Generate Week</strong> to plan Mon–Fri.</p></div>`;
       info.innerHTML=`<strong>${dinners.filter(d=>!d.skip_generate).length}</strong> dinners available — need at least 5.`;
       copyBtn.style.display='none'; return;
@@ -792,110 +980,110 @@
       </div>`;
     }).join('');
   }
-  function toggleWeekIng(wid) { document.getElementById(wid)?.classList.toggle('open'); }
+  function toggleWeekIng(wid){document.getElementById(wid)?.classList.toggle('open');}
   function copyWeek() {
-    if (!currentWeek.length) return;
-    const dateStr = new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'});
-    const header = `🍽️ Week of ${dateStr}`;
-    const lines = currentWeek.map((d,i) => {
-      const note = d.note && !isUrl(d.note) ? ` (${d.note})` : '';
-      return `${DAYS[i]} — ${d.name}${note}`;
-    });
-    const text = [header, '', ...lines].join('\n');
+    if(!currentWeek.length) return;
+    const text=currentWeek.map((d,i)=>`${DAYS[i]}: ${d.name}${d.note?' — '+d.note:''}`).join('\n');
     navigator.clipboard.writeText(text).then(()=>showToast('Copied to clipboard!'));
   }
 
   // ── Shopping List ────────────────────────────────────────
+  const CAT_ICONS = {
+    'Produce':'🥦','Meat & Seafood':'🥩','Dairy & Eggs':'🥛','Bakery':'🍞',
+    'Pantry & Dry Goods':'🫙','Canned & Jarred':'🥫','Frozen':'🧊','Beverages':'🧃','Other':'🛒'
+  };
+
   function renderShop() {
     const container=document.getElementById('shop-content');
     const info=document.getElementById('shop-info');
+    const groupBtn=document.getElementById('ai-group-btn');
     const mealsWithIng=currentWeek.filter(d=>d.ingredients&&d.ingredients.length>0);
-    if (!currentWeek.length) {
+
+    if(!currentWeek.length){
       container.innerHTML=`<div class="shop-empty"><div class="icon">🛒</div><p>Generate a week first to build your shopping list.</p></div>`;
-      info.textContent='No week generated yet.'; return;
+      info.textContent='No week generated yet.';
+      if(groupBtn) groupBtn.style.display='none';
+      return;
     }
-    if (!mealsWithIng.length) {
+    if(!mealsWithIng.length){
       container.innerHTML=`<div class="shop-empty"><div class="icon">🧾</div><p>No ingredients added yet.<br>Add ingredients to your dinners in the Library tab.</p></div>`;
-      info.textContent='Add ingredients to your dinners to see a shopping list.'; return;
+      info.textContent='Add ingredients to your dinners to see a shopping list.';
+      if(groupBtn) groupBtn.style.display='none';
+      return;
     }
+
+    if(groupBtn) groupBtn.style.display='';
     const totalItems=mealsWithIng.reduce((n,d)=>n+d.ingredients.length,0);
     const checkedCount=Object.values(shopChecks).filter(Boolean).length;
     info.innerHTML=`<span>${mealsWithIng.length} of ${currentWeek.length} meals have ingredients</span> &nbsp;·&nbsp; <span class="shop-progress"><span>${checkedCount}</span> / ${totalItems} checked</span>`;
-    container.innerHTML=`<div class="shop-groups">${mealsWithIng.map(d=>{
-      const checkedInGroup=d.ingredients.filter((_,i)=>shopChecks[`${d.id}-${i}`]).length;
-      return `<div class="shop-group">
-        <div class="shop-group-header">
-          <div class="shop-group-name">${esc(d.name)}</div>
-          <div class="shop-group-meta">${checkedInGroup}/${d.ingredients.length} done${d.servings?' · serves '+d.servings:''}</div>
-        </div>
-        <div class="shop-items">
-          ${d.ingredients.map((ing,i)=>{
-            const key=`${d.id}-${i}`;
-            const checked=!!shopChecks[key];
-            return `<div class="shop-item${checked?' checked':''}" onclick="toggleShopItem('${key}')">
-              <div class="shop-checkbox"><span class="shop-checkbox-tick">✓</span></div>
-              <div class="shop-item-text">${esc(ing)}</div>
+
+    // Update group button label
+    if(groupBtn) groupBtn.innerHTML = aiGroupedShop ? '✦ View by Meal' : '✦ Group by Category';
+
+    if(aiGroupedShop) {
+      // AI CATEGORIZED VIEW
+      container.innerHTML=`
+        <div class="ai-shop-banner"><div class="ai-dot"></div>Grouped by store category using AI · <span style="opacity:0.7;font-size:0.72rem">click "View by Meal" to switch back</span></div>
+        <div class="shop-groups">
+          ${Object.entries(aiGroupedShop).map(([cat, items])=>{
+            const checkedInCat = items.filter(item=>shopChecks[item.key]).length;
+            return `<div class="shop-cat-group">
+              <div class="shop-cat-header">
+                <span class="shop-cat-icon">${CAT_ICONS[cat]||'🛒'}</span>
+                <span class="shop-cat-name">${esc(cat)}</span>
+                <span class="shop-cat-count">${checkedInCat}/${items.length}</span>
+              </div>
+              <div class="shop-items">
+                ${items.map(item=>{
+                  const checked=!!shopChecks[item.key];
+                  return `<div class="shop-item${checked?' checked':''}" onclick="toggleShopItem('${item.key}')">
+                    <div class="shop-checkbox"><span class="shop-checkbox-tick">✓</span></div>
+                    <div class="shop-item-text">${esc(item.text)}</div>
+                  </div>`;
+                }).join('')}
+              </div>
             </div>`;
           }).join('')}
-        </div>
-      </div>`;
-    }).join('')}</div>`;
+        </div>`;
+    } else {
+      // MEAL VIEW (original)
+      container.innerHTML=`<div class="shop-groups">${mealsWithIng.map(d=>{
+        const checkedInGroup=d.ingredients.filter((_,i)=>shopChecks[`${d.id}-${i}`]).length;
+        return `<div class="shop-group">
+          <div class="shop-group-header">
+            <div class="shop-group-name">${esc(d.name)}</div>
+            <div class="shop-group-meta">${checkedInGroup}/${d.ingredients.length} done${d.servings?' · serves '+d.servings:''}</div>
+          </div>
+          <div class="shop-items">
+            ${d.ingredients.map((ing,i)=>{
+              const key=`${d.id}-${i}`;
+              const checked=!!shopChecks[key];
+              return `<div class="shop-item${checked?' checked':''}" onclick="toggleShopItem('${key}')">
+                <div class="shop-checkbox"><span class="shop-checkbox-tick">✓</span></div>
+                <div class="shop-item-text">${esc(ing)}</div>
+              </div>`;
+            }).join('')}
+          </div>
+        </div>`;
+      }).join('')}</div>`;
+    }
   }
-  function toggleShopItem(key) {
+  function toggleShopItem(key){
     shopChecks[key]=!shopChecks[key];
     localStorage.setItem(K_SHOP,JSON.stringify(shopChecks));
     renderShop();
   }
-  function clearShopChecks() { shopChecks={}; localStorage.setItem(K_SHOP,JSON.stringify(shopChecks)); renderShop(); showToast('All unchecked.'); }
-  function isInPantry(ing) {
-    const lower = ing.toLowerCase();
-    return pantryItems.some(p => lower.includes(p.toLowerCase()) || p.toLowerCase().includes(lower));
-  }
-  function copyShopList() {
+  function clearShopChecks(){shopChecks={};localStorage.setItem(K_SHOP,JSON.stringify(shopChecks));renderShop();showToast('All unchecked.');}
+  function copyShopList(){
     const mealsWithIng=currentWeek.filter(d=>d.ingredients&&d.ingredients.length>0);
-    if (!mealsWithIng.length) { showToast('No ingredients to copy.'); return; }
-    const dateStr = new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'});
-    const header = `🛒 Shopping — Week of ${dateStr}`;
-    let skipped = 0;
-    const sections = mealsWithIng.map(d => {
-      const items = d.ingredients.filter(ing => { if (isInPantry(ing)) { skipped++; return false; } return true; });
-      if (!items.length) return null;
-      return `${d.name}\n${items.map(i=>`[ ] ${i}`).join('\n')}`;
-    }).filter(Boolean);
-    if (!sections.length) { showToast('All ingredients are in your pantry!'); return; }
-    const text = [header, '', ...sections].join('\n\n');
-    navigator.clipboard.writeText(text).then(()=>showToast(`Copied!${skipped?' ('+skipped+' pantry item'+(skipped>1?'s':'')+' excluded)':''}`));
-  }
-
-  // ── Pantry ───────────────────────────────────────────────
-  function savePantry() { localStorage.setItem(K_PANTRY, JSON.stringify(pantryItems)); document.getElementById('pantry-badge').textContent=pantryItems.length; }
-  function addPantryItem() {
-    const input = document.getElementById('pantry-input');
-    const val = input?.value?.trim();
-    if (!val) { showToast('Enter an item name.'); input?.focus(); return; }
-    if (pantryItems.some(p=>p.toLowerCase()===val.toLowerCase())) { showToast('Already in pantry.'); return; }
-    pantryItems.push(val);
-    savePantry(); renderPantry();
-    input.value=''; input.focus();
-    showToast(`Added "${val}" to pantry`);
-  }
-  function removePantryItem(i) {
-    pantryItems.splice(i,1);
-    savePantry(); renderPantry();
-    showToast('Removed from pantry.');
-  }
-  function renderPantry() {
-    const el = document.getElementById('pantry-list');
-    document.getElementById('pantry-badge').textContent = pantryItems.length;
-    if (!pantryItems.length) {
-      el.innerHTML=`<div class="empty-state"><div class="icon">🧂</div><p>No pantry items yet.<br>Add staples like olive oil, garlic, salt — they'll be excluded when you copy your shopping list.</p></div>`;
-      return;
+    if(!mealsWithIng.length){showToast('No ingredients to copy.');return;}
+    let text;
+    if(aiGroupedShop){
+      text=Object.entries(aiGroupedShop).map(([cat,items])=>`${cat}:\n${items.map(i=>'  · '+i.text).join('\n')}`).join('\n\n');
+    } else {
+      text=mealsWithIng.map(d=>`${d.name}:\n${d.ingredients.map(i=>'  · '+i).join('\n')}`).join('\n\n');
     }
-    el.innerHTML=`<div class="pantry-grid">${pantryItems.map((p,i)=>`
-      <div class="pantry-item">
-        <span class="pantry-item-name">${esc(p)}</span>
-        <button class="btn btn-danger" onclick="removePantryItem(${i})">✕</button>
-      </div>`).join('')}</div>`;
+    navigator.clipboard.writeText(text).then(()=>showToast('Shopping list copied!'));
   }
 
   // ── History ──────────────────────────────────────────────
@@ -904,7 +1092,7 @@
     try {
       const rows=await sb('week_history','GET',null,'?order=created_at.desc&limit=52');
       document.getElementById('history-badge').textContent=rows.length;
-      if (!rows.length){document.getElementById('history-list').innerHTML=`<div class="empty-state"><div class="icon">📖</div><p>No history yet.</p></div>`;return;}
+      if(!rows.length){document.getElementById('history-list').innerHTML=`<div class="empty-state"><div class="icon">📖</div><p>No history yet.</p></div>`;return;}
       document.getElementById('history-list').innerHTML=rows.map((row,ri)=>{
         const date=new Date(row.created_at);
         const dateStr=date.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
@@ -924,26 +1112,24 @@
           </div>
         </div>`;
       }).join('');
-    } catch(e){ showToast('Error loading history',true); }
+    } catch(e){showToast('Error loading history',true);}
   }
-  function toggleHistory(id) {
+  function toggleHistory(id){
     document.getElementById('meals-'+id)?.classList.toggle('open');
     document.getElementById('toggle-'+id)?.classList.toggle('open');
   }
-  async function loadHistoryBadge() {
-    try { const rows=await sb('week_history','GET',null,'?select=id'); document.getElementById('history-badge').textContent=rows.length; } catch(e){}
+  async function loadHistoryBadge(){
+    try{const rows=await sb('week_history','GET',null,'?select=id');document.getElementById('history-badge').textContent=rows.length;}catch(e){}
   }
 
   // ── Tabs ─────────────────────────────────────────────────
-  function switchTab(name) {
-    const tabNames = ['library','week','shop','pantry','history'];
-    document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',tabNames[i]===name));
+  function switchTab(name){
+    document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['library','week','shop','history'][i]===name));
     document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
     document.getElementById('panel-'+name).classList.add('active');
-    if (name==='week'&&!currentWeek.length) loadWeek();
-    if (name==='shop') renderShop();
-    if (name==='pantry') renderPantry();
-    if (name==='history') loadHistory();
+    if(name==='week'&&!currentWeek.length) loadWeek();
+    if(name==='shop') renderShop();
+    if(name==='history') loadHistory();
   }
 
   // ── Utils ────────────────────────────────────────────────
@@ -958,7 +1144,6 @@
     if(e.target.id==='input-name'&&e.key==='Enter') document.getElementById('input-note').focus();
     if(e.target.id==='input-note'&&e.key==='Enter') document.getElementById('input-servings').focus();
     if(e.target.id==='input-servings'&&e.key==='Enter') addDinner();
-    if(e.target.id==='pantry-input'&&e.key==='Enter') addPantryItem();
     if(e.target.id==='setup-key'&&e.key==='Enter') saveSetup();
   });
 </script>
