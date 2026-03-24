@@ -411,6 +411,26 @@
   </div>
 </div>
 
+<!-- ══ SETTINGS MODAL ══════════════════════════════════════ -->
+<div class="modal-overlay" id="settings-modal" onclick="closeModalOverlay(event,'settings-modal')">
+  <div class="modal">
+    <div class="modal-header">
+      <div><h3>Settings</h3><div class="modal-sub">Update your connection keys</div></div>
+      <button class="modal-close" onclick="closeSettingsModal()">✕</button>
+    </div>
+    <div class="modal-body" style="gap:12px">
+      <div class="s-field"><label>Supabase Project URL</label><input type="text" id="cfg-url" placeholder="https://xxxxxxxxxxxx.supabase.co"/></div>
+      <div class="s-field"><label>Supabase Anon Key</label><input type="text" id="cfg-sb-key" placeholder="eyJ…"/></div>
+      <div class="s-field"><label>Anthropic API Key <span class="ai-badge">AI Features</span></label><input type="text" id="cfg-ai-key" placeholder="sk-ant-…"/></div>
+      <div id="cfg-error" class="setup-error">Could not connect — check your Supabase URL and key.</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeSettingsModal()">Cancel</button>
+      <button class="btn btn-primary" id="cfg-save-btn" onclick="saveSettings()">Save & Reconnect</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -611,7 +631,37 @@ No preamble, no markdown.`;
       btn.disabled=false; btn.textContent='Connect & Launch →';
     }
   }
-  function resetSetup() { if (!confirm('Change connection settings?')) return; showSetup(); }
+  function resetSetup() {
+    document.getElementById('cfg-url').value = SB_URL;
+    document.getElementById('cfg-sb-key').value = SB_KEY;
+    document.getElementById('cfg-ai-key').value = AI_KEY;
+    document.getElementById('cfg-error').style.display = 'none';
+    document.getElementById('settings-modal').classList.add('open');
+  }
+  function closeSettingsModal() { document.getElementById('settings-modal').classList.remove('open'); }
+  async function saveSettings() {
+    const url = document.getElementById('cfg-url').value.trim().replace(/\/$/,'');
+    const sbKey = document.getElementById('cfg-sb-key').value.trim();
+    const aiKey = document.getElementById('cfg-ai-key').value.trim();
+    const errEl = document.getElementById('cfg-error');
+    const btn = document.getElementById('cfg-save-btn');
+    errEl.style.display = 'none';
+    if (!url || !sbKey) { errEl.textContent = 'Supabase URL and key are required.'; errEl.style.display='block'; return; }
+    btn.disabled = true; btn.textContent = 'Saving…';
+    try {
+      SB_URL = url; SB_KEY = sbKey;
+      await sb('dinners','GET',null,'?limit=1');
+      localStorage.setItem(K_URL, url); localStorage.setItem(K_KEY, sbKey);
+      if (aiKey) { AI_KEY = aiKey; localStorage.setItem(K_AI, aiKey); }
+      closeSettingsModal();
+      showToast('Settings saved!');
+    } catch(e) {
+      errEl.textContent = 'Could not connect — check your Supabase URL and key.';
+      errEl.style.display = 'block';
+      SB_URL = localStorage.getItem(K_URL)||''; SB_KEY = localStorage.getItem(K_KEY)||'';
+    }
+    btn.disabled = false; btn.textContent = 'Save & Reconnect';
+  }
   window.addEventListener('DOMContentLoaded', ()=>{ if(SB_URL&&SB_KEY) launchApp(); else showSetup(); });
   function launchApp() {
     document.getElementById('setup-screen').style.display='none';
@@ -920,7 +970,7 @@ No preamble, no markdown.`;
     setTimeout(()=>document.getElementById('modal-search').focus(),100);
   }
   function closePickModal(){document.getElementById('pick-modal').classList.remove('open');pickingIndex=-1;}
-  function closeModalOverlay(e,id){if(e.target===document.getElementById(id)){if(id==='pick-modal')closePickModal();else if(id==='ing-modal')closeIngModal();}}
+  function closeModalOverlay(e,id){if(e.target===document.getElementById(id)){if(id==='pick-modal')closePickModal();else if(id==='ing-modal')closeIngModal();else if(id==='settings-modal')closeSettingsModal();}}
   function filterModal() {
     const q=document.getElementById('modal-search').value.toLowerCase();
     const currentIds=new Set(currentWeek.map(d=>d.id));
@@ -1140,7 +1190,7 @@ No preamble, no markdown.`;
     clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),2800);
   }
   document.addEventListener('keydown',e=>{
-    if(e.key==='Escape'){closePickModal();closeIngModal();cancelEdit();}
+    if(e.key==='Escape'){closePickModal();closeIngModal();cancelEdit();closeSettingsModal();}
     if(e.target.id==='input-name'&&e.key==='Enter') document.getElementById('input-note').focus();
     if(e.target.id==='input-note'&&e.key==='Enter') document.getElementById('input-servings').focus();
     if(e.target.id==='input-servings'&&e.key==='Enter') addDinner();
