@@ -702,7 +702,6 @@ Reply with ONLY a JSON array of ingredient strings, each with amount and unit wh
             <div class="card-footer-left">
               ${hasIng?renderIngToggle(d.id,d.ingredients):''}
               <button class="extract-btn" onclick="openIngModal('${d.id}')">${hasIng?'✎ Edit Ingredients':'+ Add Ingredients'}</button>
-              <button class="ai-extract-btn" id="ai-btn-${d.id}" onclick="aiExtractIngredients('${d.id}')">✦ AI Extract</button>
             </div>
             <label class="skip-toggle${d.skip_generate?' skipped':''}" onclick="toggleSkip('${d.id}')">
               <div class="skip-track"></div>
