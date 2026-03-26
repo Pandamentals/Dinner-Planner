@@ -279,6 +279,7 @@
     </div>
     <div class="s-field"><label>Project URL</label><input type="text" id="setup-url" placeholder="https://xxxxxxxxxxxx.supabase.co"/></div>
     <div class="s-field"><label>Anon Public Key</label><input type="text" id="setup-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9…"/></div>
+    <div class="s-field"><label>Anthropic API Key <span style="font-weight:300;text-transform:none;letter-spacing:0">(for AI ingredient extraction)</span></label><input type="password" id="setup-ai-key" placeholder="sk-ant-…"/></div>
     <div id="setup-error" class="setup-error">Could not connect — check your URL and key.</div>
     <div style="display:flex;justify-content:flex-end;margin-top:16px">
       <button class="btn btn-primary" id="setup-btn" onclick="saveSetup()">Connect & Launch →</button>
@@ -398,10 +399,11 @@
 
 <script>
   const DAYS = ['Mon','Tue','Wed','Thu','Fri'];
-  const K_URL = 'dp_sb_url', K_KEY = 'dp_sb_key', K_SHOP = 'dp_shop_checks';
+  const K_URL = 'dp_sb_url', K_KEY = 'dp_sb_key', K_SHOP = 'dp_shop_checks', K_AI = 'dp_ai_key';
 
   let SB_URL = localStorage.getItem(K_URL) || '';
   let SB_KEY = localStorage.getItem(K_KEY) || '';
+  let AI_KEY = localStorage.getItem(K_AI) || '';
   let dinners = [];
   let currentWeek = [];
   let pickingIndex = -1;
@@ -437,42 +439,53 @@
   }
 
   // ── AI Ingredient Extraction ─────────────────────────────
+  function makeAIHeaders() {
+    if (!AI_KEY) throw new Error('No Anthropic API key — add it in ⚙ Settings.');
+    return {
+      'Content-Type': 'application/json',
+      'x-api-key': AI_KEY,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    };
+  }
+  function makeAIPrompt(name, note) {
+    const noteStr = note && !note.startsWith('http') ? `Notes: ${note}` : '';
+    return `You are a cooking assistant. Given a dinner name${noteStr ? ' and notes' : ''}, list the typical ingredients needed.
+
+Dinner: ${name}
+${noteStr}
+
+Reply with ONLY a JSON array of ingredient strings, each with amount and unit where appropriate. Example: ["2 chicken breasts","1 cup rice","3 cloves garlic","2 tbsp olive oil"]. No other text, no markdown fences.`;
+  }
+  async function callAI(prompt) {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: makeAIHeaders(),
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1000, messages: [{ role: 'user', content: prompt }] })
+    });
+    const data = await response.json();
+    if (data.error) throw new Error(data.error.message);
+    const raw = data.content?.map(b => b.text || '').join('').trim();
+    const clean = raw.replace(/```json|```/g, '').trim();
+    const parsed = JSON.parse(clean);
+    if (!Array.isArray(parsed) || !parsed.length) throw new Error('Unexpected response format');
+    return parsed;
+  }
+
   async function aiExtractIngredients(id) {
     const d = dinners.find(x => x.id === id); if (!d) return;
     const btn = document.getElementById(`ai-btn-${id}`);
     if (!btn) return;
     btn.disabled = true; btn.textContent = '✦ Extracting…';
     try {
-      const note = d.note && !d.note.startsWith('http') ? `Notes: ${d.note}` : '';
-      const prompt = `You are a cooking assistant. Given a dinner name${note ? ' and notes' : ''}, list the typical ingredients needed.
-
-Dinner: ${d.name}
-${note}
-
-Reply with ONLY a JSON array of ingredient strings, each with amount and unit where appropriate. Example: ["2 chicken breasts","1 cup rice","3 cloves garlic","2 tbsp olive oil"]. No other text, no markdown fences.`;
-
-      const response = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 1000,
-          messages: [{ role: 'user', content: prompt }]
-        })
-      });
-      const data = await response.json();
-      const raw = data.content?.map(b => b.text || '').join('').trim();
-      const clean = raw.replace(/```json|```/g, '').trim();
-      const ingredients = JSON.parse(clean);
-      if (!Array.isArray(ingredients) || !ingredients.length) throw new Error('bad response');
-
+      const ingredients = await callAI(makeAIPrompt(d.name, d.note));
       await sb('dinners', 'PATCH', { ingredients }, `?id=eq.${id}`);
       d.ingredients = ingredients;
       renderLibrary(); renderWeek(); renderShop();
       showToast(`✦ Extracted ${ingredients.length} ingredients!`);
     } catch(e) {
       console.error(e);
-      showToast('AI extraction failed — try manually.', true);
+      showToast(e.message || 'AI extraction failed — try manually.', true);
     }
     if (document.getElementById(`ai-btn-${id}`)) {
       document.getElementById(`ai-btn-${id}`).disabled = false;
@@ -486,33 +499,12 @@ Reply with ONLY a JSON array of ingredient strings, each with amount and unit wh
     const btn = document.getElementById('ing-ai-btn');
     btn.disabled = true; btn.textContent = '✦ Extracting…';
     try {
-      const note = d.note && !d.note.startsWith('http') ? `Notes: ${d.note}` : '';
-      const prompt = `You are a cooking assistant. Given a dinner name${note ? ' and notes' : ''}, list the typical ingredients needed.
-
-Dinner: ${d.name}
-${note}
-
-Reply with ONLY a JSON array of ingredient strings, each with amount and unit where appropriate. Example: ["2 chicken breasts","1 cup rice","3 cloves garlic","2 tbsp olive oil"]. No other text, no markdown fences.`;
-
-      const response = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 1000,
-          messages: [{ role: 'user', content: prompt }]
-        })
-      });
-      const data = await response.json();
-      const raw = data.content?.map(b => b.text || '').join('').trim();
-      const clean = raw.replace(/```json|```/g, '').trim();
-      const ingredients = JSON.parse(clean);
-      if (!Array.isArray(ingredients) || !ingredients.length) throw new Error('bad response');
+      const ingredients = await callAI(makeAIPrompt(d.name, d.note));
       editingIngredients = ingredients;
       renderIngModalBody();
       showToast(`✦ Extracted ${ingredients.length} ingredients!`);
     } catch(e) {
-      showToast('AI extraction failed.', true);
+      showToast(e.message || 'AI extraction failed.', true);
     }
     const b2 = document.getElementById('ing-ai-btn');
     if (b2) { b2.disabled = false; b2.textContent = '✦ AI Extract'; }
@@ -542,23 +534,26 @@ Reply with ONLY a JSON array of ingredient strings, each with amount and unit wh
     document.getElementById('app').style.display = 'none';
     if (SB_URL) document.getElementById('setup-url').value = SB_URL;
     if (SB_KEY) document.getElementById('setup-key').value = SB_KEY;
+    if (AI_KEY) document.getElementById('setup-ai-key').value = AI_KEY;
   }
   async function saveSetup() {
     const url = document.getElementById('setup-url').value.trim().replace(/\/$/,'');
     const key = document.getElementById('setup-key').value.trim();
+    const aiKey = document.getElementById('setup-ai-key').value.trim();
     const errEl = document.getElementById('setup-error'), btn = document.getElementById('setup-btn');
     errEl.style.display = 'none';
-    if (!url||!key) { errEl.textContent='Both fields required.'; errEl.style.display='block'; return; }
+    if (!url||!key) { errEl.textContent='Supabase URL and key are required.'; errEl.style.display='block'; return; }
     btn.disabled=true; btn.textContent='Connecting…';
     try {
-      SB_URL=url; SB_KEY=key;
+      SB_URL=url; SB_KEY=key; AI_KEY=aiKey;
       await sb('dinners','GET',null,'?limit=1');
       localStorage.setItem(K_URL,url); localStorage.setItem(K_KEY,key);
+      if (aiKey) localStorage.setItem(K_AI,aiKey);
       btn.disabled=false; btn.textContent='Connect & Launch →';
       launchApp();
     } catch(e) {
       document.getElementById('setup-error').style.display='block';
-      SB_URL=localStorage.getItem(K_URL)||''; SB_KEY=localStorage.getItem(K_KEY)||'';
+      SB_URL=localStorage.getItem(K_URL)||''; SB_KEY=localStorage.getItem(K_KEY)||''; AI_KEY=localStorage.getItem(K_AI)||'';
       btn.disabled=false; btn.textContent='Connect & Launch →';
     }
   }
