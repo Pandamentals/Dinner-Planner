@@ -68,14 +68,6 @@
     .star-btn.starred { color: var(--star); }
     .extract-btn { font-size: 0.72rem; color: var(--accent2); background: none; border: 1px solid var(--border); border-radius: 6px; padding: 3px 9px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
     .extract-btn:hover:not(:disabled) { background: rgba(232,196,122,0.08); border-color: var(--accent2); }
-    .ai-extract-btn { font-size: 0.72rem; color: #a0c4a0; background: none; border: 1px solid rgba(160,196,160,0.3); border-radius: 6px; padding: 3px 9px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
-    .ai-extract-btn:hover:not(:disabled) { background: rgba(160,196,160,0.08); border-color: rgba(160,196,160,0.6); }
-    .ai-extract-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-    .shop-view-toggle { display: flex; gap: 4px; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 3px; }
-    .shop-view-btn { padding: 5px 12px; border-radius: 6px; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.75rem; font-weight: 500; color: var(--text-muted); background: transparent; transition: all 0.15s; }
-    .shop-view-btn.active { background: var(--surface); color: var(--accent); border: 1px solid var(--border); }
-    .shop-category-icon { font-size: 1rem; width: 28px; text-align: center; flex-shrink: 0; }
-    .shop-item-meal { font-size: 0.68rem; color: var(--text-dim); margin-top: 1px; }
 
     /* ── SKIP TOGGLE ── */
     .skip-toggle { display: flex; align-items: center; gap: 6px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
@@ -264,6 +256,39 @@
       .day-note{display:none} #setup-screen{margin:30px auto} .week-controls{gap:8px}
     }
   </style>
+  <!-- PWA / Home Screen -->
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="Dinner Planner"/>
+  <meta name="application-name" content="Dinner Planner"/>
+  <meta name="theme-color" content="#0f0e0c"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
+  <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAAFNklEQVR42u3dQZLDRAwF0ByAghVVFEed83EYbgFVrFkkcdv6kt7ir+Oo3yidia1+/fbrL/+ITMlLEQRoEaBFgBYBWoAWAVoEaBGgRYAWoEWAFgFaBGgRoDPy918/6gB0NtC7o85At8ULOdArAAMO9HjEcAM9GjLYy0FPRAz3QtCbIG+F/QIZbKBB/i9//vH7bQEb6Fsh34m3EjnQiyAnIH4KN9BDMScjvhs30EMgd0R8J26gm2KeBPk0bKBBBhvoZzFvgnwSNtBhmDdDPgUb6ADMAJ+FDTTMUAN9DTOo98MGWlfWrTeDhhnqMaBBtgVZCxq+DNRAL8Tc9Zq7oX7BnHUrJ9QDQHda8IrHpqBuBLrDwiY9Ewh1MOj0hUx+2BXqMNDJi9fpKW6om4HuAHnaNZy6xjWg0xZpAp7Umo0HnbQwk8cYbEW9FnTnH3C61XAs6E4TiSb9krcJ9QvmHXM5tqCOAl1Z9A03FFWjHgO6ujsbNFNf46dQv6Z35423oCajbg86FfP2e5qnoh4L2oMBNXUYDRpmqJ9GPQ40zPV1GQkaZqgrUI8B/e7r/N/rfnKNnZ4gqUQ9CnRSd34H5ETQJ2rVEfVrcnd+9+nrbaCfQr0GdOW+EOisrUc86OTuDPT8Lv2a2J0/HfiyFXQK6ljQCd35mwlGm0F/W8fULt0W9JW9I9DPdumxoKu7M9C5XToOdIfuvAX00zVN6tJjQF+ZAgr0/V16HOiE7gx0dpcG+ssvQEBndukY0E9tN059owe6pks/se14berOQM/v0kADDXQF6JP/bwU6d9uxGvSpw3smgU76NGwJuvILIdDzQF9F/dq0fwZ6/j4aaKCB7rp/Bnr+PhpooIEGGmiggQYa6PqbzzdPQAIaaKCBBhpooIEGGmiggS6/jyNxnNhm0Heu6QnUOjTQOjTQQAMNNNBAAw000EADDTTQQAMNNNBAAw000EB7phBozxQCDTTQP+23HUCbyzFqHw20yUltZ9sBbbbd+H000KaPAg30XtDpH4VAm+A/qksD7YyVtqdgAe0UrFHnFALtnMJRJ8kCndmd40B3Oesb6LwbwNoeXp/apbeDntKdW4M+PdUf6LruHAs6Ydvx7VFvW0FXD/I5ibkEdCLqraATMMeDTunSn7zORtAJ63MacxnotC4N9IzuPAb01QXaBrp6TdqBTurS77zOJtApW407MI8CfWWxtoBOWYuWoDuh3gB6A+aRoL9ZvOmgk+rfGnQX1JNBb8I8GnRHqBPe/3jQyainwk6t9d2Yo0BDPR/zGNDVXXoL6uT6PoE5DnRC0SdCTqjrONCdUHeB3ameTxl7FHQK6u6wu9XwSV9rQX+yICmw064X6EDUn0J5GnfqtSViLgOdiPobPFV3qXWpU4WreNAVH/ffoqpIcm1WgU5HnQ47vR5VpkpBd0CdBrtDDSo9lYPugroSd6f3XG0pAnQ31Hci7/zeEhzFgO6O+h0YE39ST8IcB3o6apiBhrrBFgrow6jBrvsukGYnEjTUMI8DbQtiizEStG6tK48DDTXM40B/ixrsMz8CdTHSCvQV1NthX6lbJx/tQF9FvQ321Vp1s9ESNNggjwR9AvW2QTOTMY8AfRL25Lkc0yGPA30SdQfcp9/rFAOjQN8Fu+MYg22QR4O+E3baRCKQF4F+CnanTF/rFaDB/lmzxqtAb4S9bW1Xgp6Oe/N6rgc9CbZ1BLo9busFdGvg1gPotsjVGejoPwB1AFoEaAFaBGgRoEWAFgFagBYBWgRoEaBFgBagRYAWqc+/ae/mmmKWatgAAAAASUVORK5CYII="/>
+  <link rel="icon" type="image/png" sizes="192x192" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAIAAADdvvtQAAAFWUlEQVR42u3dQY7UMBAF0BwAwQoJcdQ5H4fhFnABFkxix7+q3uKvkOge+7846U4717evX/6ITM1lEAQAEQBEABABQAQAEQBEABABQAQAEQBEABABQAQAEQBEAJAb+f3rwzgA0KvQu2OcARhTdigAUHggAFB6GABQehgAUHoYAFB8EABQfBAACCz+zx/ftwUEAKKKv7Psp1EAoPiRhX8bBADDi1+h9G9gAGBQ+SuXficGABQfhEYQLuWfU/zVEABQfBCKQ7imll/x10IAoEj5FX0fBACCy6/Y70AAQPkhAEDxQfgAQPkhAED5IQDgnfIraC4EAJQfAgCUHwIAlgLoUKBJCAAYUv6uvz7rhuBS/jq/1e00BgA0KH/Sjg4QFAZQaaIrbG8CQSEAVSa24j4/EDQCULH4Hd/Hjvc8FkDyBKYXrQqEdASX8j8rVsWLcQgAeDRRHT6PB+AggKqT1O3bWQgOAEgrv53hPkYjiASg/LMRtAWQdPS3NWLmuL+N4Jp49J98e3UVBO0AVCi/+/jnIRgFQPlzxmMUAOWHIBXBCADKnzk+IwAoPwTJCFoDUP788WoNQPkhSEcwDoCS541dSwDVyv+vf//Me6/0U0QIGgO4+1pTAKSuBOMApJ2/AnD+eqANgGpHfwDmrgJX96P/ky0KAchDAAAAACQDOHH6s+p8F4DzCN4+Dbq6Hv1X7NIMwPpxTlsFygNYebEHQI1VIBZAyunPqn36uwFIGu+U06DL0R+AyatAOwArn9QCQO4qAAAAACQBSNktGYAzAE7shl0KQPLRH4C5qwAAAABQDcCuz7gBqHUaBMDC/787gNRv4FsASLgABmAegBUILuf/AEy+Dric/wMw+Trgcv4PwOTrAAAAAAAAAAAAAAAA5gLosL0iAAAAAAAAAAAAAAAAAAAAAJsBvHkfkGcM1Nnbv8r9QFYAAKwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAnX8TDIDfBI/eFQIAu0KM3hcIAPsCuQ4AwM5wrgMAsDeo6wAA7A4NAAAAjHlCDACeEGMVAGDU0R8AAADwnGAAqn0CVxZAtVUAgMyjfyyAbqsAAL2P/i0A7N4wF4Csb+DLA6i0CgCQd/SPB5C0Cqx4dCoAObegry4/AAAAcAJAFQQAZJW/DIC0VeDu600HkDR/O8p/FECFVQCA3kf/lgBWTtxkAEk7cZcE0AHBVABTyj8SwGdecyKAtLkqDaA6gmkAppW/PYCnkzoJQOL8tABQHcGETC3/GAAQZI7LGAAQKH9i+ccBgCBnHMYBqIKgO4QK4/9W+SMBQKD8bQEkrQL/OxkTip825m/2MRIABHPL3x5AIoKOECqO79vlPwagMoJ0CJXH9UQPAbg5WUkY0t8zAMUQ3ClV6lG1yjie6uBRAOkI7hbt1G7JVcfuZP/KADh9uvGkgKdSZbxGA6iEoAqESmN0unsRAKohSMRQcUwSehcDoCqCkxgqj0FK56IAVEewG0SXvzepb3EAOiH43+JMuNcosfwtAPhZY62VDgAIlB8ACJQfgC0IQMi7uE/uVzwACJR/PAAIlH88ABAUHwAIlB+A+whA2PstdsUelQXwBAEI62/fqNqh0gCeIgBhzX1LlftTHgAIig/AIgRTIKwYpy6daQUABMUHYCGCKTvDTS1/awA7IFTBsPpv7tyP9gB2Qai8MZbiDwSwG0LSc7UUH4AICNUysQdjAYAwu/gAgGDeAZiHwfwCMA6DeQRgHAbzBcAoEOYDgDEojDMArcAYBwBEABABQAQAEQBEABABQAQAEQBEABABQAQAEQBEABABQOST+QvhQL9CBRzAJAAAAABJRU5ErkJggg=="/>
+  <link rel="icon" type="image/png" sizes="512x512" href="data:image/png;base64,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"/>
+  <script>
+    // Inline Web App Manifest for Android PWA
+    const manifest = {
+      name: "Dinner Planner",
+      short_name: "Dinner",
+      description: "Your weekly meal companion",
+      start_url: "./",
+      display: "standalone",
+      background_color: "#0f0e0c",
+      theme_color: "#0f0e0c",
+      orientation: "portrait-primary",
+      icons: [
+        { src: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAIAAADdvvtQAAAFWUlEQVR42u3dQY7UMBAF0BwAwQoJcdQ5H4fhFnABFkxix7+q3uKvkOge+7846U4717evX/6ITM1lEAQAEQBEABABQAQAEQBEABABQAQAEQBEABABQAQAEQBEAJAb+f3rwzgA0KvQu2OcARhTdigAUHggAFB6GABQehgAUHoYAFB8EABQfBAACCz+zx/ftwUEAKKKv7Psp1EAoPiRhX8bBADDi1+h9G9gAGBQ+SuXficGABQfhEYQLuWfU/zVEABQfBCKQ7imll/x10IAoEj5FX0fBACCy6/Y70AAQPkhAEDxQfgAQPkhAED5IQDgnfIraC4EAJQfAgCUHwIAlgLoUKBJCAAYUv6uvz7rhuBS/jq/1e00BgA0KH/Sjg4QFAZQaaIrbG8CQSEAVSa24j4/EDQCULH4Hd/Hjvc8FkDyBKYXrQqEdASX8j8rVsWLcQgAeDRRHT6PB+AggKqT1O3bWQgOAEgrv53hPkYjiASg/LMRtAWQdPS3NWLmuL+N4Jp49J98e3UVBO0AVCi/+/jnIRgFQPlzxmMUAOWHIBXBCADKnzk+IwAoPwTJCFoDUP788WoNQPkhSEcwDoCS541dSwDVyv+vf//Me6/0U0QIGgO4+1pTAKSuBOMApJ2/AnD+eqANgGpHfwDmrgJX96P/ky0KAchDAAAAACQDOHH6s+p8F4DzCN4+Dbq6Hv1X7NIMwPpxTlsFygNYebEHQI1VIBZAyunPqn36uwFIGu+U06DL0R+AyatAOwArn9QCQO4qAAAAACQBSNktGYAzAE7shl0KQPLRH4C5qwAAAABQDcCuz7gBqHUaBMDC/787gNRv4FsASLgABmAegBUILuf/AEy+Dric/wMw+Trgcv4PwOTrAAAAAAAAAAAAAAAA5gLosL0iAAAAAAAAAAAAAAAAAAAAAJsBvHkfkGcM1Nnbv8r9QFYAAKwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAnX8TDIDfBI/eFQIAu0KM3hcIAPsCuQ4AwM5wrgMAsDeo6wAA7A4NAAAAjHlCDACeEGMVAGDU0R8AAADwnGAAqn0CVxZAtVUAgMyjfyyAbqsAAL2P/i0A7N4wF4Csb+DLA6i0CgCQd/SPB5C0Cqx4dCoAObegry4/AAAAcAJAFQQAZJW/DIC0VeDu600HkDR/O8p/FECFVQCA3kf/lgBWTtxkAEk7cZcE0AHBVABTyj8SwGdecyKAtLkqDaA6gmkAppW/PYCnkzoJQOL8tABQHcGETC3/GAAQZI7LGAAQKH9i+ccBgCBnHMYBqIKgO4QK4/9W+SMBQKD8bQEkrQL/OxkTip825m/2MRIABHPL3x5AIoKOECqO79vlPwagMoJ0CJXH9UQPAbg5WUkY0t8zAMUQ3ClV6lG1yjie6uBRAOkI7hbt1G7JVcfuZP/KADh9uvGkgKdSZbxGA6iEoAqESmN0unsRAKohSMRQcUwSehcDoCqCkxgqj0FK56IAVEewG0SXvzepb3EAOiH43+JMuNcosfwtAPhZY62VDgAIlB8ACJQfgC0IQMi7uE/uVzwACJR/PAAIlH88ABAUHwAIlB+A+whA2PstdsUelQXwBAEI62/fqNqh0gCeIgBhzX1LlftTHgAIig/AIgRTIKwYpy6daQUABMUHYCGCKTvDTS1/awA7IFTBsPpv7tyP9gB2Qai8MZbiDwSwG0LSc7UUH4AICNUysQdjAYAwu/gAgGDeAZiHwfwCMA6DeQRgHAbzBcAoEOYDgDEojDMArcAYBwBEABABQAQAEQBEABABQAQAEQBEABABQAQAEQBEABABQOST+QvhQL9CBRzAJAAAAABJRU5ErkJggg==", sizes: "192x192", type: "image/png", purpose: "any maskable" },
+        { src: "data:image/png;base64,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", sizes: "512x512", type: "image/png", purpose: "any maskable" }
+      ]
+    };
+    const blob = new Blob([JSON.stringify(manifest)], {type: 'application/manifest+json'});
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('link');
+    link.rel = 'manifest';
+    link.href = url;
+    document.head.appendChild(link);
+  </script>
 </head>
 <body>
 
@@ -279,7 +304,6 @@
     </div>
     <div class="s-field"><label>Project URL</label><input type="text" id="setup-url" placeholder="https://xxxxxxxxxxxx.supabase.co"/></div>
     <div class="s-field"><label>Anon Public Key</label><input type="text" id="setup-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9…"/></div>
-    <div class="s-field"><label>Anthropic API Key <span style="font-weight:300;text-transform:none;letter-spacing:0">(for AI ingredient extraction)</span></label><input type="password" id="setup-ai-key" placeholder="sk-ant-…"/></div>
     <div id="setup-error" class="setup-error">Could not connect — check your URL and key.</div>
     <div style="display:flex;justify-content:flex-end;margin-top:16px">
       <button class="btn btn-primary" id="setup-btn" onclick="saveSetup()">Connect & Launch →</button>
@@ -348,10 +372,6 @@
     <div class="panel" id="panel-shop">
       <div class="shop-controls">
         <div class="shop-info" id="shop-info">Shopping list for this week's meals.</div>
-        <div class="shop-view-toggle">
-          <button class="shop-view-btn active" id="shop-view-cat" onclick="setShopView('category')">By Category</button>
-          <button class="shop-view-btn" id="shop-view-meal" onclick="setShopView('meal')">By Meal</button>
-        </div>
         <button class="btn btn-ghost" onclick="clearShopChecks()">Uncheck All</button>
         <button class="btn btn-ghost" onclick="copyShopList()">Copy List</button>
       </div>
@@ -389,7 +409,6 @@
     <div class="modal-body" id="ing-modal-body"></div>
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeIngModal()">Cancel</button>
-      <button class="ai-extract-btn" id="ing-ai-btn" onclick="aiExtractIntoModal()" style="padding:8px 14px;font-size:0.8rem">✦ AI Extract</button>
       <button class="btn btn-primary" id="ing-save-btn" onclick="saveIngredients()">Save Ingredients</button>
     </div>
   </div>
@@ -399,11 +418,10 @@
 
 <script>
   const DAYS = ['Mon','Tue','Wed','Thu','Fri'];
-  const K_URL = 'dp_sb_url', K_KEY = 'dp_sb_key', K_SHOP = 'dp_shop_checks', K_AI = 'dp_ai_key';
+  const K_URL = 'dp_sb_url', K_KEY = 'dp_sb_key', K_SHOP = 'dp_shop_checks';
 
   let SB_URL = localStorage.getItem(K_URL) || '';
   let SB_KEY = localStorage.getItem(K_KEY) || '';
-  let AI_KEY = localStorage.getItem(K_AI) || '';
   let dinners = [];
   let currentWeek = [];
   let pickingIndex = -1;
@@ -412,103 +430,6 @@
   let editingIngredients = [];
   let shopChecks = JSON.parse(localStorage.getItem(K_SHOP) || '{}'); // { "dinnerID-ingIndex": true }
   let editingCardId = null;
-  let shopView = 'category'; // 'category' | 'meal'
-
-  // ── Grocery categories ───────────────────────────────────
-  const GROCERY_CATS = [
-    { key:'produce',    label:'Produce',        icon:'🥦', keywords:['lettuce','spinach','kale','arugula','cabbage','broccoli','cauliflower','carrot','celery','onion','garlic','shallot','leek','tomato','pepper','zucchini','squash','eggplant','mushroom','cucumber','avocado','potato','sweet potato','corn','pea','bean','asparagus','artichoke','beet','radish','turnip','parsnip','fennel','bok choy','brussels','apple','banana','lemon','lime','orange','grapefruit','grape','berry','strawberry','blueberry','raspberry','blackberry','mango','pineapple','peach','pear','plum','cherry','melon','watermelon','cantaloupe','kiwi','fig','herb','parsley','cilantro','basil','mint','rosemary','thyme','sage','dill','chive','scallion','green onion','jalapeño','chili'] },
-    { key:'meat',       label:'Meat & Seafood',  icon:'🥩', keywords:['chicken','beef','pork','lamb','turkey','duck','veal','sausage','bacon','ham','salami','pepperoni','steak','ground','mince','ribs','chop','tenderloin','breast','thigh','wing','drumstick','salmon','tuna','shrimp','prawn','crab','lobster','fish','tilapia','cod','halibut','sea bass','mahi','scallop','clam','mussel','oyster','anchovy','sardine'] },
-    { key:'dairy',      label:'Dairy & Eggs',    icon:'🧀', keywords:['milk','cream','butter','cheese','yogurt','sour cream','cheddar','mozzarella','parmesan','gouda','brie','feta','ricotta','cream cheese','cottage cheese','egg','half and half','heavy cream','whipping cream','ghee','kefir'] },
-    { key:'bread',      label:'Bread & Bakery',  icon:'🍞', keywords:['bread','bun','roll','bagel','tortilla','wrap','pita','naan','baguette','sourdough','croissant','muffin','cracker','breadcrumb','panko','ciabatta','english muffin'] },
-    { key:'pasta',      label:'Pasta, Rice & Grains', icon:'🍝', keywords:['pasta','spaghetti','penne','fettuccine','linguine','rigatoni','farfalle','orzo','lasagna','noodle','rice','quinoa','couscous','barley','oat','lentil','chickpea','farro','bulgur','polenta','grits','flour','cornmeal'] },
-    { key:'canned',     label:'Canned & Jarred',  icon:'🥫', keywords:['canned','diced tomato','crushed tomato','tomato paste','tomato sauce','coconut milk','broth','stock','bean','lentil','corn','chickpea','kidney','black bean','tuna can','anchovy','olive','pickle','jar','preserved','roasted red pepper'] },
-    { key:'condiments', label:'Condiments & Sauces', icon:'🫙', keywords:['sauce','ketchup','mustard','mayo','mayonnaise','vinegar','soy sauce','worcestershire','hot sauce','sriracha','salsa','pesto','tahini','hummus','ranch','bbq','hoisin','teriyaki','oyster sauce','fish sauce','miso','curry paste'] },
-    { key:'spices',     label:'Spices & Baking',  icon:'🧂', keywords:['salt','pepper','cumin','paprika','turmeric','cinnamon','oregano','basil','bay leaf','chili powder','cayenne','garlic powder','onion powder','ginger','nutmeg','clove','cardamom','coriander','curry','baking','powder','soda','yeast','vanilla','sugar','brown sugar','honey','maple','molasses','cocoa','chocolate','oil','olive oil','vegetable oil','canola','sesame oil','coconut oil','lard','shortening','cooking spray'] },
-    { key:'frozen',     label:'Frozen',           icon:'🧊', keywords:['frozen','ice cream','pizza','veggie','edamame','peas frozen','corn frozen','fish frozen'] },
-    { key:'beverages',  label:'Beverages',         icon:'🥤', keywords:['wine','beer','juice','soda','water','tea','coffee','broth','stock','milk alternative','almond milk','oat milk','soy milk'] },
-    { key:'other',      label:'Other',             icon:'🛒', keywords:[] },
-  ];
-
-  function categorizIngredient(ing) {
-    const lower = ing.toLowerCase();
-    for (const cat of GROCERY_CATS) {
-      if (cat.key === 'other') continue;
-      if (cat.keywords.some(kw => lower.includes(kw))) return cat.key;
-    }
-    return 'other';
-  }
-
-  // ── AI Ingredient Extraction ─────────────────────────────
-  function makeAIHeaders() {
-    if (!AI_KEY) throw new Error('No Anthropic API key — add it in ⚙ Settings.');
-    return {
-      'Content-Type': 'application/json',
-      'x-api-key': AI_KEY,
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-direct-browser-access': 'true'
-    };
-  }
-  function makeAIPrompt(name, note) {
-    const noteStr = note && !note.startsWith('http') ? `Notes: ${note}` : '';
-    return `You are a cooking assistant. Given a dinner name${noteStr ? ' and notes' : ''}, list the typical ingredients needed.
-
-Dinner: ${name}
-${noteStr}
-
-Reply with ONLY a JSON array of ingredient strings, each with amount and unit where appropriate. Example: ["2 chicken breasts","1 cup rice","3 cloves garlic","2 tbsp olive oil"]. No other text, no markdown fences.`;
-  }
-  async function callAI(prompt) {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: makeAIHeaders(),
-      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1000, messages: [{ role: 'user', content: prompt }] })
-    });
-    const data = await response.json();
-    if (data.error) throw new Error(data.error.message);
-    const raw = data.content?.map(b => b.text || '').join('').trim();
-    const clean = raw.replace(/```json|```/g, '').trim();
-    const parsed = JSON.parse(clean);
-    if (!Array.isArray(parsed) || !parsed.length) throw new Error('Unexpected response format');
-    return parsed;
-  }
-
-  async function aiExtractIngredients(id) {
-    const d = dinners.find(x => x.id === id); if (!d) return;
-    const btn = document.getElementById(`ai-btn-${id}`);
-    if (!btn) return;
-    btn.disabled = true; btn.textContent = '✦ Extracting…';
-    try {
-      const ingredients = await callAI(makeAIPrompt(d.name, d.note));
-      await sb('dinners', 'PATCH', { ingredients }, `?id=eq.${id}`);
-      d.ingredients = ingredients;
-      renderLibrary(); renderWeek(); renderShop();
-      showToast(`✦ Extracted ${ingredients.length} ingredients!`);
-    } catch(e) {
-      console.error(e);
-      showToast(e.message || 'AI extraction failed — try manually.', true);
-    }
-    if (document.getElementById(`ai-btn-${id}`)) {
-      document.getElementById(`ai-btn-${id}`).disabled = false;
-      document.getElementById(`ai-btn-${id}`).textContent = '✦ AI Extract';
-    }
-  }
-
-  async function aiExtractIntoModal() {
-    if (!ingModalDinnerId) return;
-    const d = dinners.find(x => x.id === ingModalDinnerId); if (!d) return;
-    const btn = document.getElementById('ing-ai-btn');
-    btn.disabled = true; btn.textContent = '✦ Extracting…';
-    try {
-      const ingredients = await callAI(makeAIPrompt(d.name, d.note));
-      editingIngredients = ingredients;
-      renderIngModalBody();
-      showToast(`✦ Extracted ${ingredients.length} ingredients!`);
-    } catch(e) {
-      showToast(e.message || 'AI extraction failed.', true);
-    }
-    const b2 = document.getElementById('ing-ai-btn');
-    if (b2) { b2.disabled = false; b2.textContent = '✦ AI Extract'; }
-  }
 
   // ── Supabase ─────────────────────────────────────────────
   async function sb(path, method='GET', body=null, qs='') {
@@ -534,26 +455,23 @@ Reply with ONLY a JSON array of ingredient strings, each with amount and unit wh
     document.getElementById('app').style.display = 'none';
     if (SB_URL) document.getElementById('setup-url').value = SB_URL;
     if (SB_KEY) document.getElementById('setup-key').value = SB_KEY;
-    if (AI_KEY) document.getElementById('setup-ai-key').value = AI_KEY;
   }
   async function saveSetup() {
     const url = document.getElementById('setup-url').value.trim().replace(/\/$/,'');
     const key = document.getElementById('setup-key').value.trim();
-    const aiKey = document.getElementById('setup-ai-key').value.trim();
     const errEl = document.getElementById('setup-error'), btn = document.getElementById('setup-btn');
     errEl.style.display = 'none';
-    if (!url||!key) { errEl.textContent='Supabase URL and key are required.'; errEl.style.display='block'; return; }
+    if (!url||!key) { errEl.textContent='Both fields required.'; errEl.style.display='block'; return; }
     btn.disabled=true; btn.textContent='Connecting…';
     try {
-      SB_URL=url; SB_KEY=key; AI_KEY=aiKey;
+      SB_URL=url; SB_KEY=key;
       await sb('dinners','GET',null,'?limit=1');
       localStorage.setItem(K_URL,url); localStorage.setItem(K_KEY,key);
-      if (aiKey) localStorage.setItem(K_AI,aiKey);
       btn.disabled=false; btn.textContent='Connect & Launch →';
       launchApp();
     } catch(e) {
       document.getElementById('setup-error').style.display='block';
-      SB_URL=localStorage.getItem(K_URL)||''; SB_KEY=localStorage.getItem(K_KEY)||''; AI_KEY=localStorage.getItem(K_AI)||'';
+      SB_URL=localStorage.getItem(K_URL)||''; SB_KEY=localStorage.getItem(K_KEY)||'';
       btn.disabled=false; btn.textContent='Connect & Launch →';
     }
   }
@@ -886,113 +804,52 @@ Reply with ONLY a JSON array of ingredient strings, each with amount and unit wh
   }
 
   // ── Shopping List ────────────────────────────────────────
-  function setShopView(v) {
-    shopView = v;
-    document.getElementById('shop-view-cat').classList.toggle('active', v === 'category');
-    document.getElementById('shop-view-meal').classList.toggle('active', v === 'meal');
-    renderShop();
-  }
-
   function renderShop() {
-    const container = document.getElementById('shop-content');
-    const info = document.getElementById('shop-info');
-    const mealsWithIng = currentWeek.filter(d => d.ingredients && d.ingredients.length > 0);
+    const container=document.getElementById('shop-content');
+    const info=document.getElementById('shop-info');
+    const mealsWithIng=currentWeek.filter(d=>d.ingredients&&d.ingredients.length>0);
     if (!currentWeek.length) {
-      container.innerHTML = `<div class="shop-empty"><div class="icon">🛒</div><p>Generate a week first to build your shopping list.</p></div>`;
-      info.textContent = 'No week generated yet.'; return;
+      container.innerHTML=`<div class="shop-empty"><div class="icon">🛒</div><p>Generate a week first to build your shopping list.</p></div>`;
+      info.textContent='No week generated yet.'; return;
     }
     if (!mealsWithIng.length) {
-      container.innerHTML = `<div class="shop-empty"><div class="icon">🧾</div><p>No ingredients added yet.<br>Add ingredients to your dinners in the Library tab.</p></div>`;
-      info.textContent = 'Add ingredients to your dinners to see a shopping list.'; return;
+      container.innerHTML=`<div class="shop-empty"><div class="icon">🧾</div><p>No ingredients added yet.<br>Add ingredients to your dinners in the Library tab.</p></div>`;
+      info.textContent='Add ingredients to your dinners to see a shopping list.'; return;
     }
-
-    // Build flat item list with stable keys
-    const allItems = [];
-    mealsWithIng.forEach(d => {
-      d.ingredients.forEach((ing, i) => {
-        allItems.push({ key: `${d.id}-${i}`, ing, mealName: d.name, mealId: d.id, cat: categorizIngredient(ing) });
-      });
-    });
-
-    const totalItems = allItems.length;
-    const checkedCount = allItems.filter(item => shopChecks[item.key]).length;
-    info.innerHTML = `<span>${mealsWithIng.length} of ${currentWeek.length} meals have ingredients</span> &nbsp;·&nbsp; <span class="shop-progress"><span>${checkedCount}</span> / ${totalItems} checked</span>`;
-
-    if (shopView === 'category') {
-      // Group by grocery category
-      const grouped = {};
-      allItems.forEach(item => {
-        if (!grouped[item.cat]) grouped[item.cat] = [];
-        grouped[item.cat].push(item);
-      });
-
-      const catOrder = GROCERY_CATS.map(c => c.key).filter(k => grouped[k]);
-      container.innerHTML = `<div class="shop-groups">${catOrder.map(catKey => {
-        const catDef = GROCERY_CATS.find(c => c.key === catKey);
-        const items = grouped[catKey];
-        const checkedInGroup = items.filter(item => shopChecks[item.key]).length;
-        return `<div class="shop-group">
-          <div class="shop-group-header">
-            <div class="shop-group-name"><span style="margin-right:8px">${catDef.icon}</span>${catDef.label}</div>
-            <div class="shop-group-meta">${checkedInGroup}/${items.length} done</div>
-          </div>
-          <div class="shop-items">
-            ${items.map(item => {
-              const checked = !!shopChecks[item.key];
-              return `<div class="shop-item${checked ? ' checked' : ''}" onclick="toggleShopItem('${item.key}')">
-                <div class="shop-checkbox"><span class="shop-checkbox-tick">✓</span></div>
-                <div style="flex:1">
-                  <div class="shop-item-text">${esc(item.ing)}</div>
-                  <div class="shop-item-meal">${esc(item.mealName)}</div>
-                </div>
-              </div>`;
-            }).join('')}
-          </div>
-        </div>`;
-      }).join('')}</div>`;
-    } else {
-      // By meal (original view)
-      container.innerHTML = `<div class="shop-groups">${mealsWithIng.map(d => {
-        const items = allItems.filter(i => i.mealId === d.id);
-        const checkedInGroup = items.filter(item => shopChecks[item.key]).length;
-        return `<div class="shop-group">
-          <div class="shop-group-header">
-            <div class="shop-group-name">${esc(d.name)}</div>
-            <div class="shop-group-meta">${checkedInGroup}/${items.length} done${d.servings ? ' · serves ' + d.servings : ''}</div>
-          </div>
-          <div class="shop-items">
-            ${items.map(item => {
-              const checked = !!shopChecks[item.key];
-              return `<div class="shop-item${checked ? ' checked' : ''}" onclick="toggleShopItem('${item.key}')">
-                <div class="shop-checkbox"><span class="shop-checkbox-tick">✓</span></div>
-                <div class="shop-item-text">${esc(item.ing)}</div>
-              </div>`;
-            }).join('')}
-          </div>
-        </div>`;
-      }).join('')}</div>`;
-    }
+    const totalItems=mealsWithIng.reduce((n,d)=>n+d.ingredients.length,0);
+    const checkedCount=Object.values(shopChecks).filter(Boolean).length;
+    info.innerHTML=`<span>${mealsWithIng.length} of ${currentWeek.length} meals have ingredients</span> &nbsp;·&nbsp; <span class="shop-progress"><span>${checkedCount}</span> / ${totalItems} checked</span>`;
+    container.innerHTML=`<div class="shop-groups">${mealsWithIng.map(d=>{
+      const checkedInGroup=d.ingredients.filter((_,i)=>shopChecks[`${d.id}-${i}`]).length;
+      return `<div class="shop-group">
+        <div class="shop-group-header">
+          <div class="shop-group-name">${esc(d.name)}</div>
+          <div class="shop-group-meta">${checkedInGroup}/${d.ingredients.length} done${d.servings?' · serves '+d.servings:''}</div>
+        </div>
+        <div class="shop-items">
+          ${d.ingredients.map((ing,i)=>{
+            const key=`${d.id}-${i}`;
+            const checked=!!shopChecks[key];
+            return `<div class="shop-item${checked?' checked':''}" onclick="toggleShopItem('${key}')">
+              <div class="shop-checkbox"><span class="shop-checkbox-tick">✓</span></div>
+              <div class="shop-item-text">${esc(ing)}</div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>`;
+    }).join('')}</div>`;
   }
   function toggleShopItem(key) {
-    shopChecks[key] = !shopChecks[key];
-    localStorage.setItem(K_SHOP, JSON.stringify(shopChecks));
+    shopChecks[key]=!shopChecks[key];
+    localStorage.setItem(K_SHOP,JSON.stringify(shopChecks));
     renderShop();
   }
-  function clearShopChecks() { shopChecks = {}; localStorage.setItem(K_SHOP, JSON.stringify(shopChecks)); renderShop(); showToast('All unchecked.'); }
+  function clearShopChecks() { shopChecks={}; localStorage.setItem(K_SHOP,JSON.stringify(shopChecks)); renderShop(); showToast('All unchecked.'); }
   function copyShopList() {
-    const mealsWithIng = currentWeek.filter(d => d.ingredients && d.ingredients.length > 0);
+    const mealsWithIng=currentWeek.filter(d=>d.ingredients&&d.ingredients.length>0);
     if (!mealsWithIng.length) { showToast('No ingredients to copy.'); return; }
-    if (shopView === 'category') {
-      const allItems = [];
-      mealsWithIng.forEach(d => d.ingredients.forEach((ing, i) => allItems.push({ key: `${d.id}-${i}`, ing, cat: categorizIngredient(ing) })));
-      const grouped = {};
-      allItems.forEach(item => { if (!grouped[item.cat]) grouped[item.cat] = []; grouped[item.cat].push(item.ing); });
-      const text = GROCERY_CATS.filter(c => grouped[c.key]).map(c => `${c.label}:\n${grouped[c.key].map(i => '  · ' + i).join('\n')}`).join('\n\n');
-      navigator.clipboard.writeText(text).then(() => showToast('Shopping list copied!'));
-    } else {
-      const text = mealsWithIng.map(d => `${d.name}:\n${d.ingredients.map(i => '  · ' + i).join('\n')}`).join('\n\n');
-      navigator.clipboard.writeText(text).then(() => showToast('Shopping list copied!'));
-    }
+    const text=mealsWithIng.map(d=>`${d.name}:\n${d.ingredients.map(i=>'  · '+i).join('\n')}`).join('\n\n');
+    navigator.clipboard.writeText(text).then(()=>showToast('Shopping list copied!'));
   }
 
   // ── History ──────────────────────────────────────────────
