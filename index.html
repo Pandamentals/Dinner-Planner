@@ -147,12 +147,12 @@
     .week-day-ingredients.open { display: block; }
     .day-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-dim); font-weight: 500; min-width: 36px; }
     .day-divider { width: 1px; height: 28px; background: var(--border); flex-shrink: 0; }
-    .day-meal { font-family: 'Playfair Display', serif; font-size: 1.05rem; color: var(--text); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
     .day-note { font-size: 0.75rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px; }
     .day-note a { color: var(--accent2); text-decoration: none; }
     .day-actions { display: flex; gap: 4px; flex-shrink: 0; align-items: center; }
-    .reorder-btns { display: flex; flex-direction: column; gap: 2px; }
-    .reorder-btns .btn-icon { padding: 2px 7px; font-size: 0.7rem; line-height: 1; }
+    .day-meal { font-family: 'Playfair Display', serif; font-size: 1.05rem; color: var(--text); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }
+    .day-meal:hover { color: var(--accent); }
 
 
     /* ── SHOPPING LIST ── */
@@ -754,15 +754,12 @@
         <div class="week-day${hasIng?' has-ing':''}">
           <div class="day-label">${DAYS[i]}</div>
           <div class="day-divider"></div>
-          <div class="day-meal">${esc(d.name)}${d.is_favorite?' <span style="font-size:0.75rem">⭐</span>':''}</div>
+          <div class="day-meal" onclick="jumpToMeal('${esc(d.name)}')">${esc(d.name)}${d.is_favorite?' <span style="font-size:0.75rem">⭐</span>':''}</div>
           <div class="day-actions">
-            ${hasIng?`<button class="btn-icon" onclick="toggleWeekIng('${wid}')" title="Ingredients">🧾</button>`:''}
             <button class="btn-icon" onclick="randomReplace(${i})" title="Random swap">🔀</button>
             <button class="btn-icon" onclick="openPickModal(${i})" title="Pick manually">≡</button>
-            <div class="reorder-btns">
-              <button class="btn-icon" onclick="moveDay(${i},-1)" title="Move up" ${i===0?'disabled':''}>↑</button>
-              <button class="btn-icon" onclick="moveDay(${i},1)" title="Move down" ${i===currentWeek.length-1?'disabled':''}>↓</button>
-            </div>
+            <button class="btn-icon" onclick="moveDay(${i},-1)" title="Move up" ${i===0?'disabled':''}>↑</button>
+            <button class="btn-icon" onclick="moveDay(${i},1)" title="Move down" ${i===currentWeek.length-1?'disabled':''}>↓</button>
           </div>
         </div>
         ${hasIng?`<div class="week-day-ingredients" id="${wid}"><ul class="ingredients-list">${d.ingredients.map(ing=>`<li>${esc(ing)}</li>`).join('')}</ul></div>`:''}
@@ -778,6 +775,10 @@
     [currentWeek[idx], currentWeek[target]] = [currentWeek[target], currentWeek[idx]];
     await saveCurrentWeek(); renderWeek(); renderShop();
     showToast('Order saved ✦');
+  }
+  function jumpToMeal(name) {
+    document.getElementById('lib-search').value = name;
+    switchTab('library');
   }
   function copyWeek() {
     if (!currentWeek.length) return;
