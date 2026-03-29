@@ -777,8 +777,9 @@
     showToast('Order saved ✦');
   }
   function jumpToMeal(name) {
-    document.getElementById('lib-search').value = name;
     switchTab('library');
+    document.getElementById('lib-search').value = name;
+    renderLibrary();
   }
   function copyWeek() {
     if (!currentWeek.length) return;
