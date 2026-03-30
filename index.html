@@ -645,19 +645,8 @@
     const status = document.getElementById('ing-extract-status');
     btn.disabled = true; btn.textContent = '⏳ Extracting…';
     status.style.cssText = 'font-size:0.78rem;color:var(--text-muted);padding:6px 2px;display:block';
-    status.textContent = 'Fetching recipe page…';
+    status.textContent = 'Reading recipe page…';
     try {
-      const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
-      const proxyRes = await fetch(proxyUrl);
-      const proxyData = await proxyRes.json();
-      const html = proxyData.contents || '';
-      const text = html.replace(/<style[^>]*>[\s\S]*?<\/style>/gi,'')
-                       .replace(/<script[^>]*>[\s\S]*?<\/script>/gi,'')
-                       .replace(/<[^>]+>/g,' ')
-                       .replace(/\s+/g,' ')
-                       .substring(0, 12000);
-      if (!text.trim()) throw new Error('Empty page');
-      status.textContent = 'Reading ingredients…';
       const res = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
         headers: {
@@ -668,24 +657,33 @@
         },
         body: JSON.stringify({
           model: 'claude-sonnet-4-20250514',
-          max_tokens: 1000,
+          max_tokens: 1024,
+          tools: [{ type: 'web_search_20250305', name: 'web_search' }],
           messages: [{
             role: 'user',
-            content: `From the recipe page text below, extract ONLY the ingredients list. Return ONLY a JSON array of strings with quantity and unit included per item. Example: ["2 cups flour","1 tsp salt"]. No other text, no markdown.\n\n${text}`
+            content: `Fetch this recipe URL and extract ONLY the ingredients list: ${url}\n\nReturn ONLY a JSON array of strings, each with quantity, unit, and ingredient name. Example: ["2 cups flour","1 tsp salt","3 cloves garlic"]. No other text, no markdown fences.`
           }]
         })
       });
+      if (!res.ok) {
+        const errText = await res.text();
+        throw new Error(`API error ${res.status}: ${errText}`);
+      }
       const data = await res.json();
-      const raw = data.content?.map(b=>b.text||'').join('') || '';
+      // Gather all text blocks from the response (may be after tool use)
+      const raw = (data.content || []).map(b => b.text || '').join('').trim();
       const clean = raw.replace(/```json|```/g,'').trim();
+      if (!clean) throw new Error('Empty response from Claude');
       const parsed = JSON.parse(clean);
-      if (!Array.isArray(parsed)||!parsed.length) throw new Error('No ingredients found');
-      parsed.forEach(i=>{ if(typeof i==='string'&&i.trim()) editingIngredients.push(i.trim()); });
+      if (!Array.isArray(parsed) || !parsed.length) throw new Error('No ingredients found');
+      parsed.forEach(i => { if (typeof i === 'string' && i.trim()) editingIngredients.push(i.trim()); });
       renderIngModalBody();
+      status.textContent = '';
       showToast(`✦ Extracted ${parsed.length} ingredients!`);
     } catch(e) {
+      console.error('Extraction error:', e);
       status.style.color = 'var(--danger)';
-      status.textContent = '⚠ Could not extract — try adding manually.';
+      status.textContent = `⚠ ${e.message || 'Could not extract'} — try adding manually.`;
       btn.disabled = false; btn.textContent = '✦ Extract ingredients from recipe link';
     }
   }
