@@ -613,39 +613,47 @@
   function renderIngModalBody() {
     const body=document.getElementById('ing-modal-body');
     const hasIng=editingIngredients.length>0;
+    const d=dinners.find(x=>x.id===ingModalDinnerId);
+    const hasLink=d&&isUrl(d.note);
     body.innerHTML=`
-      <div class="ing-step">
-        <div class="ing-step-label">✦ Extract from recipe URL</div>
-        <div style="display:flex;gap:8px">
-          <input class="ing-add-input" id="ing-url-input" placeholder="https://..." style="flex:1"/>
-          <button class="ing-add-btn" id="ing-extract-btn" onclick="extractFromUrl()">Extract</button>
-        </div>
-        <div id="ing-extract-status" style="display:none"></div>
-      </div>
-      <div style="border-top:1px solid var(--border);margin:4px 0"></div>
       ${hasIng?`<div class="ing-edit-list" id="ing-edit-list">
         ${editingIngredients.map((ing,i)=>`<div class="ing-edit-row">
           <input class="ing-edit-input" value="${esc(ing)}" onchange="updateIngredient(${i},this.value)" onblur="updateIngredient(${i},this.value)"/>
           <button class="ing-remove-btn" onclick="removeIngredient(${i})">\u2715</button>
         </div>`).join('')}
-      </div>`:`<div style="font-size:0.82rem;color:var(--text-dim);padding:4px 0 8px">No ingredients yet. Extract from a URL above or add manually below.</div>`}
+      </div>`:`<div style="font-size:0.82rem;color:var(--text-dim);padding:4px 0 8px">No ingredients yet.<br><span style="font-size:0.75rem">Add manually below${hasLink?' or extract from the saved recipe link':' (add a recipe link to the dinner to enable AI extraction)'}.</span></div>`}
       <div class="ing-add-row">
         <input class="ing-add-input" id="ing-new-input" placeholder="e.g. 2 cups flour" onkeydown="handleIngKeydown(event)"/>
         <button class="ing-add-btn" onclick="addIngredientManual()">+ Add</button>
-      </div>`;
-    setTimeout(()=>document.getElementById('ing-url-input')?.focus(), 80);
+      </div>
+      ${hasLink?`<div id="ing-extract-status"></div><button class="btn btn-ghost" id="ing-extract-btn" onclick="extractFromUrl()" style="margin-top:4px;width:100%;justify-content:center">✦ Extract ingredients from recipe link</button>`:''}`;
+    setTimeout(()=>document.getElementById('ing-new-input')?.focus(), 80);
   }
 
   async function extractFromUrl() {
-    const url = document.getElementById('ing-url-input')?.value?.trim();
-    if (!url || !url.startsWith('http')) { showToast('Enter a valid recipe URL first.'); return; }
+    const d = dinners.find(x=>x.id===ingModalDinnerId);
+    const url = d?.note;
+    if (!url || !isUrl(url)) { showToast('No recipe link found on this dinner.'); return; }
     const btn = document.getElementById('ing-extract-btn');
     const status = document.getElementById('ing-extract-status');
-    btn.disabled = true; btn.textContent = 'Extracting…';
-    status.style.display = 'flex'; status.style.gap = '8px'; status.style.alignItems = 'center';
-    status.style.fontSize = '0.8rem'; status.style.color = 'var(--text-muted)';
-    status.innerHTML = '<span class="spinner-sm"></span> Reading recipe…';
+    btn.disabled = true; btn.textContent = '⏳ Extracting…';
+    status.style.cssText = 'font-size:0.78rem;color:var(--text-muted);padding:6px 2px;display:block';
+    status.textContent = 'Fetching recipe page…';
     try {
+      // Fetch page via CORS proxy
+      const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+      const proxyRes = await fetch(proxyUrl);
+      const proxyData = await proxyRes.json();
+      const html = proxyData.contents || '';
+      // Strip tags to get readable text, limit size
+      const text = html.replace(/<style[^>]*>[\s\S]*?<\/style>/gi,'')
+                       .replace(/<script[^>]*>[\s\S]*?<\/script>/gi,'')
+                       .replace(/<[^>]+>/g,' ')
+                       .replace(/\s+/g,' ')
+                       .substring(0, 12000);
+      if (!text.trim()) throw new Error('Empty page');
+      status.textContent = 'Reading ingredients…';
+      // Send to Claude
       const res = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -654,24 +662,23 @@
           max_tokens: 1000,
           messages: [{
             role: 'user',
-            content: `Extract ONLY the ingredients list from this recipe URL: ${url}\n\nReturn ONLY a JSON array of strings, one ingredient per item, with quantity and unit included. Example: ["2 cups flour","1 tsp salt"]. No other text, no markdown, just the raw JSON array.`
+            content: `From the recipe page text below, extract ONLY the ingredients list. Return ONLY a JSON array of strings with quantity and unit included per item. Example: ["2 cups flour","1 tsp salt"]. No other text, no markdown.\n\n${text}`
           }]
         })
       });
       const data = await res.json();
-      const text = data.content?.map(b => b.text||'').join('') || '';
-      const clean = text.replace(/```json|```/g,'').trim();
+      const raw = data.content?.map(b=>b.text||'').join('') || '';
+      const clean = raw.replace(/```json|```/g,'').trim();
       const parsed = JSON.parse(clean);
-      if (!Array.isArray(parsed) || !parsed.length) throw new Error('No ingredients found');
-      parsed.forEach(i => { if (typeof i === 'string' && i.trim()) editingIngredients.push(i.trim()); });
-      status.style.display = 'none';
+      if (!Array.isArray(parsed)||!parsed.length) throw new Error('No ingredients found');
+      parsed.forEach(i=>{ if(typeof i==='string'&&i.trim()) editingIngredients.push(i.trim()); });
       renderIngModalBody();
       showToast(`✦ Extracted ${parsed.length} ingredients!`);
     } catch(e) {
-      status.innerHTML = '⚠ Could not extract — try adding manually.';
       status.style.color = 'var(--danger)';
+      status.textContent = '⚠ Could not extract — try adding manually.';
+      btn.disabled = false; btn.textContent = '✦ Extract ingredients from recipe link';
     }
-    btn.disabled = false; btn.textContent = 'Extract';
   }
   function updateIngredient(i,val) { editingIngredients[i]=val; }
   function removeIngredient(i) { editingIngredients.splice(i,1); renderIngModalBody(); }
