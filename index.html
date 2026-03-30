@@ -35,21 +35,21 @@
     .setup-error { color: var(--danger); font-size: 0.8rem; margin-top: 8px; display: none; }
 
     /* ── APP SHELL ── */
-    #app { display: none; height: 100dvh; flex-direction: column; overflow: hidden; }
-    header { border-bottom: 1px solid var(--border); padding: 22px 40px 20px; display: flex; align-items: flex-end; gap: 16px; background: #161410; flex-shrink: 0; z-index: 10; }
+    #app { display: none; }
+    header { border-bottom: 1px solid var(--border); padding: 22px 40px 20px; display: flex; align-items: flex-end; gap: 16px; background: #161410; position: sticky; top: 0; z-index: 10; }
     header h1 { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--accent); letter-spacing: -0.5px; line-height: 1; }
     header .sub { font-size: 0.78rem; color: var(--text-muted); font-weight: 300; letter-spacing: 0.08em; text-transform: uppercase; padding-bottom: 3px; flex: 1; }
     .reset-link { font-size: 0.72rem; color: var(--text-dim); cursor: pointer; text-decoration: underline; padding-bottom: 3px; }
     .reset-link:hover { color: var(--text-muted); }
-    .tabs { display: flex; gap: 4px; padding: 16px 40px 0; border-bottom: 1px solid var(--border); overflow-x: auto; -webkit-overflow-scrolling: touch; flex-shrink: 0; }
+    .tabs { display: flex; gap: 4px; padding: 16px 40px 0; border-bottom: 1px solid var(--border); overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; scrollbar-width: none; position: sticky; top: 81px; z-index: 9; background: var(--bg); }
+    .tabs::-webkit-scrollbar { display: none; }
     .tab { padding: 9px 18px; border-radius: 8px 8px 0 0; cursor: pointer; font-size: 0.82rem; font-weight: 500; color: var(--text-muted); border: 1px solid transparent; border-bottom: none; transition: all 0.2s; letter-spacing: 0.03em; position: relative; bottom: -1px; background: transparent; white-space: nowrap; }
     .tab:hover { color: var(--text); background: var(--surface2); }
     .tab.active { color: var(--accent); background: var(--surface); border-color: var(--border); border-bottom-color: var(--surface); }
-    main { display: flex; flex: 1; overflow: hidden; }
-    .panels-track { display: flex; flex: 1; overflow-x: scroll; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
-    .panels-track::-webkit-scrollbar { display: none; }
-    .panel { min-width: 100%; scroll-snap-align: start; padding: 32px 40px 80px; box-sizing: border-box; overflow-y: auto; -webkit-overflow-scrolling: touch; }
-    @media(max-width:640px){ .panel { padding: 24px 16px 80px; } }
+    main { padding: 32px 40px; max-width: 960px; }
+    .panel { display: none; }
+    .panel.active { display: block; animation: fadeIn 0.2s ease; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
     .section-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-dim); margin-bottom: 16px; font-weight: 500; }
 
     /* ── BUTTONS ── */
@@ -148,13 +148,11 @@
     .week-day-ingredients.open { display: block; }
     .day-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-dim); font-weight: 500; min-width: 36px; }
     .day-divider { width: 1px; height: 28px; background: var(--border); flex-shrink: 0; }
-
     .day-note { font-size: 0.75rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px; }
     .day-note a { color: var(--accent2); text-decoration: none; }
     .day-actions { display: flex; gap: 4px; flex-shrink: 0; align-items: center; }
     .day-meal { font-family: 'Playfair Display', serif; font-size: 1.05rem; color: var(--text); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }
     .day-meal:hover { color: var(--accent); }
-
 
     /* ── SHOPPING LIST ── */
     .shop-controls { display: flex; gap: 12px; align-items: center; margin-bottom: 24px; flex-wrap: wrap; }
@@ -296,7 +294,6 @@
     <div class="tab" onclick="switchTab('history')">History <span class="count-badge" id="history-badge">0</span></div>
   </div>
   <main>
-    <div class="panels-track" id="panels-track">
 
     <!-- LIBRARY -->
     <div class="panel active" id="panel-library">
@@ -356,7 +353,6 @@
       <div id="history-list"></div>
     </div>
 
-    </div><!-- /panels-track -->
   </main>
 </div>
 
@@ -452,7 +448,7 @@
   window.addEventListener('DOMContentLoaded', ()=>{ if(SB_URL&&SB_KEY) launchApp(); else showSetup(); });
   function launchApp() {
     document.getElementById('setup-screen').style.display='none';
-    document.getElementById('app').style.display='flex';
+    document.getElementById('app').style.display='block';
     loadDinners(); loadWeek();
   }
 
@@ -618,17 +614,64 @@
     const body=document.getElementById('ing-modal-body');
     const hasIng=editingIngredients.length>0;
     body.innerHTML=`
+      <div class="ing-step">
+        <div class="ing-step-label">✦ Extract from recipe URL</div>
+        <div style="display:flex;gap:8px">
+          <input class="ing-add-input" id="ing-url-input" placeholder="https://..." style="flex:1"/>
+          <button class="ing-add-btn" id="ing-extract-btn" onclick="extractFromUrl()">Extract</button>
+        </div>
+        <div id="ing-extract-status" style="display:none"></div>
+      </div>
+      <div style="border-top:1px solid var(--border);margin:4px 0"></div>
       ${hasIng?`<div class="ing-edit-list" id="ing-edit-list">
         ${editingIngredients.map((ing,i)=>`<div class="ing-edit-row">
           <input class="ing-edit-input" value="${esc(ing)}" onchange="updateIngredient(${i},this.value)" onblur="updateIngredient(${i},this.value)"/>
           <button class="ing-remove-btn" onclick="removeIngredient(${i})">\u2715</button>
         </div>`).join('')}
-      </div>`:`<div style="font-size:0.82rem;color:var(--text-dim);padding:4px 0 8px">No ingredients yet.<br><span style="font-size:0.75rem">Tip: paste multiple lines at once and hit Add All.</span></div>`}
+      </div>`:`<div style="font-size:0.82rem;color:var(--text-dim);padding:4px 0 8px">No ingredients yet. Extract from a URL above or add manually below.</div>`}
       <div class="ing-add-row">
-        <input class="ing-add-input" id="ing-new-input" placeholder="e.g. 2 cups flour  (paste multiple lines for bulk add)" onkeydown="handleIngKeydown(event)"/>
+        <input class="ing-add-input" id="ing-new-input" placeholder="e.g. 2 cups flour" onkeydown="handleIngKeydown(event)"/>
         <button class="ing-add-btn" onclick="addIngredientManual()">+ Add</button>
       </div>`;
-    setTimeout(()=>document.getElementById('ing-new-input')?.focus(), 80);
+    setTimeout(()=>document.getElementById('ing-url-input')?.focus(), 80);
+  }
+
+  async function extractFromUrl() {
+    const url = document.getElementById('ing-url-input')?.value?.trim();
+    if (!url || !url.startsWith('http')) { showToast('Enter a valid recipe URL first.'); return; }
+    const btn = document.getElementById('ing-extract-btn');
+    const status = document.getElementById('ing-extract-status');
+    btn.disabled = true; btn.textContent = 'Extracting…';
+    status.style.display = 'flex'; status.style.gap = '8px'; status.style.alignItems = 'center';
+    status.style.fontSize = '0.8rem'; status.style.color = 'var(--text-muted)';
+    status.innerHTML = '<span class="spinner-sm"></span> Reading recipe…';
+    try {
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 1000,
+          messages: [{
+            role: 'user',
+            content: `Extract ONLY the ingredients list from this recipe URL: ${url}\n\nReturn ONLY a JSON array of strings, one ingredient per item, with quantity and unit included. Example: ["2 cups flour","1 tsp salt"]. No other text, no markdown, just the raw JSON array.`
+          }]
+        })
+      });
+      const data = await res.json();
+      const text = data.content?.map(b => b.text||'').join('') || '';
+      const clean = text.replace(/```json|```/g,'').trim();
+      const parsed = JSON.parse(clean);
+      if (!Array.isArray(parsed) || !parsed.length) throw new Error('No ingredients found');
+      parsed.forEach(i => { if (typeof i === 'string' && i.trim()) editingIngredients.push(i.trim()); });
+      status.style.display = 'none';
+      renderIngModalBody();
+      showToast(`✦ Extracted ${parsed.length} ingredients!`);
+    } catch(e) {
+      status.innerHTML = '⚠ Could not extract — try adding manually.';
+      status.style.color = 'var(--danger)';
+    }
+    btn.disabled = false; btn.textContent = 'Extract';
   }
   function updateIngredient(i,val) { editingIngredients[i]=val; }
   function removeIngredient(i) { editingIngredients.splice(i,1); renderIngModalBody(); }
@@ -765,7 +808,6 @@
             <button class="btn-icon" onclick="moveDay(${i},1)" title="Move down" ${i===currentWeek.length-1?'disabled':''}>↓</button>
           </div>
         </div>
-        ${hasIng?`<div class="week-day-ingredients" id="${wid}"><ul class="ingredients-list">${d.ingredients.map(ing=>`<li>${esc(ing)}</li>`).join('')}</ul></div>`:''}
       </div>`;
     }).join('');
   }
@@ -876,28 +918,14 @@
   }
 
   // ── Tabs ─────────────────────────────────────────────────
-  const TAB_NAMES = ['library','week','shop','history'];
   function switchTab(name) {
-    const idx = TAB_NAMES.indexOf(name);
-    document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active', i===idx));
-    const track = document.getElementById('panels-track');
-    track.scrollTo({ left: idx * track.clientWidth, behavior: 'smooth' });
+    document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['library','week','shop','history'][i]===name));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    document.getElementById('panel-'+name).classList.add('active');
     if (name==='week'&&!currentWeek.length) loadWeek();
     if (name==='shop') renderShop();
     if (name==='history') loadHistory();
   }
-  // Keep tab highlight in sync when user swipes manually
-  function onPanelScroll() {
-    const track = document.getElementById('panels-track');
-    const idx = Math.round(track.scrollLeft / track.clientWidth);
-    document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active', i===idx));
-    const name = TAB_NAMES[idx];
-    if (name==='shop') renderShop();
-    if (name==='history') loadHistory();
-  }
-  document.addEventListener('DOMContentLoaded', ()=>{
-    document.getElementById('panels-track').addEventListener('scroll', onPanelScroll, {passive:true});
-  });
 
   // ── Utils ────────────────────────────────────────────────
   function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}}
