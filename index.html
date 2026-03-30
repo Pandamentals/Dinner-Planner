@@ -270,9 +270,11 @@
     <div class="setup-steps">
       <div class="step"><div class="step-num">1</div><div class="step-text">In Supabase go to <strong>Project Settings → API</strong>.</div></div>
       <div class="step"><div class="step-num">2</div><div class="step-text">Copy your <code>Project URL</code> and <code>anon public</code> key below.</div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-text">Optionally add your <a href="https://console.anthropic.com/settings/keys" target="_blank">Anthropic API key</a> to enable AI ingredient extraction.</div></div>
     </div>
     <div class="s-field"><label>Project URL</label><input type="text" id="setup-url" placeholder="https://xxxxxxxxxxxx.supabase.co"/></div>
     <div class="s-field"><label>Anon Public Key</label><input type="text" id="setup-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9…"/></div>
+    <div class="s-field"><label>Anthropic API Key <span style="color:var(--text-dim);font-size:0.7rem;text-transform:none;letter-spacing:0">(optional — for AI extract)</span></label><input type="password" id="setup-anthropic-key" placeholder="sk-ant-…"/></div>
     <div id="setup-error" class="setup-error">Could not connect — check your URL and key.</div>
     <div style="display:flex;justify-content:flex-end;margin-top:16px">
       <button class="btn btn-primary" id="setup-btn" onclick="saveSetup()">Connect & Launch →</button>
@@ -387,10 +389,11 @@
 
 <script>
   const DAYS = ['Mon','Tue','Wed','Thu','Fri'];
-  const K_URL = 'dp_sb_url', K_KEY = 'dp_sb_key', K_SHOP = 'dp_shop_checks';
+  const K_URL = 'dp_sb_url', K_KEY = 'dp_sb_key', K_SHOP = 'dp_shop_checks', K_ANT = 'dp_ant_key';
 
   let SB_URL = localStorage.getItem(K_URL) || '';
   let SB_KEY = localStorage.getItem(K_KEY) || '';
+  let ANT_KEY = localStorage.getItem(K_ANT) || '';
   let dinners = [];
   let currentWeek = [];
   let pickingIndex = -1;
@@ -424,23 +427,26 @@
     document.getElementById('app').style.display = 'none';
     if (SB_URL) document.getElementById('setup-url').value = SB_URL;
     if (SB_KEY) document.getElementById('setup-key').value = SB_KEY;
+    if (ANT_KEY) document.getElementById('setup-anthropic-key').value = ANT_KEY;
   }
   async function saveSetup() {
     const url = document.getElementById('setup-url').value.trim().replace(/\/$/,'');
     const key = document.getElementById('setup-key').value.trim();
+    const antKey = document.getElementById('setup-anthropic-key').value.trim();
     const errEl = document.getElementById('setup-error'), btn = document.getElementById('setup-btn');
     errEl.style.display = 'none';
     if (!url||!key) { errEl.textContent='Both fields required.'; errEl.style.display='block'; return; }
     btn.disabled=true; btn.textContent='Connecting…';
     try {
-      SB_URL=url; SB_KEY=key;
+      SB_URL=url; SB_KEY=key; ANT_KEY=antKey;
       await sb('dinners','GET',null,'?limit=1');
       localStorage.setItem(K_URL,url); localStorage.setItem(K_KEY,key);
+      if (antKey) localStorage.setItem(K_ANT,antKey); else localStorage.removeItem(K_ANT);
       btn.disabled=false; btn.textContent='Connect & Launch →';
       launchApp();
     } catch(e) {
       document.getElementById('setup-error').style.display='block';
-      SB_URL=localStorage.getItem(K_URL)||''; SB_KEY=localStorage.getItem(K_KEY)||'';
+      SB_URL=localStorage.getItem(K_URL)||''; SB_KEY=localStorage.getItem(K_KEY)||''; ANT_KEY=localStorage.getItem(K_ANT)||'';
       btn.disabled=false; btn.textContent='Connect & Launch →';
     }
   }
@@ -634,18 +640,17 @@
     const d = dinners.find(x=>x.id===ingModalDinnerId);
     const url = d?.note;
     if (!url || !isUrl(url)) { showToast('No recipe link found on this dinner.'); return; }
+    if (!ANT_KEY) { showToast('Add your Anthropic API key in ⚙ Settings to use AI extract.', true); return; }
     const btn = document.getElementById('ing-extract-btn');
     const status = document.getElementById('ing-extract-status');
     btn.disabled = true; btn.textContent = '⏳ Extracting…';
     status.style.cssText = 'font-size:0.78rem;color:var(--text-muted);padding:6px 2px;display:block';
     status.textContent = 'Fetching recipe page…';
     try {
-      // Fetch page via CORS proxy
       const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
       const proxyRes = await fetch(proxyUrl);
       const proxyData = await proxyRes.json();
       const html = proxyData.contents || '';
-      // Strip tags to get readable text, limit size
       const text = html.replace(/<style[^>]*>[\s\S]*?<\/style>/gi,'')
                        .replace(/<script[^>]*>[\s\S]*?<\/script>/gi,'')
                        .replace(/<[^>]+>/g,' ')
@@ -653,12 +658,16 @@
                        .substring(0, 12000);
       if (!text.trim()) throw new Error('Empty page');
       status.textContent = 'Reading ingredients…';
-      // Send to Claude
       const res = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': ANT_KEY,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
         body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
+          model: 'claude-haiku-4-5-20251001',
           max_tokens: 1000,
           messages: [{
             role: 'user',
