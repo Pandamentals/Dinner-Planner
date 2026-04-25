@@ -11,7 +11,7 @@
       --bg: #0f0e0c; --surface: #1a1815; --surface2: #242118; --border: #2e2b24;
       --accent: #e8c47a; --accent2: #c4a25a; --text: #f0ebe0;
       --text-muted: #7a7060; --text-dim: #4a4438; --danger: #c46060;
-      --star: #e8c47a; --radius: 12px;
+      --star: #e8c47a; --radius: 12px; --page-max: 1180px;
     }
     body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 0 0 80px; }
 
@@ -36,17 +36,17 @@
 
     /* APP SHELL */
     #app { display: none; }
-    header { border-bottom: 1px solid var(--border); padding: 22px 40px 20px; display: flex; align-items: flex-end; gap: 16px; background: #161410; position: sticky; top: 0; z-index: 10; }
+    header { border-bottom: 1px solid var(--border); padding: 22px max(40px, calc((100vw - var(--page-max)) / 2 + 40px)) 20px; display: flex; align-items: flex-end; gap: 16px; background: #161410; position: sticky; top: 0; z-index: 10; }
     header h1 { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--accent); letter-spacing: -0.5px; line-height: 1; }
     header .sub { font-size: 0.78rem; color: var(--text-muted); font-weight: 300; letter-spacing: 0.08em; text-transform: uppercase; padding-bottom: 3px; flex: 1; }
     .reset-link { font-size: 0.72rem; color: var(--text-dim); cursor: pointer; text-decoration: underline; padding-bottom: 3px; }
     .reset-link:hover { color: var(--text-muted); }
-    .tabs { display: flex; gap: 4px; padding: 16px 40px 0; border-bottom: 1px solid var(--border); overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; scrollbar-width: none; position: sticky; top: 81px; z-index: 9; background: var(--bg); }
+    .tabs { display: flex; gap: 4px; padding: 16px max(40px, calc((100vw - var(--page-max)) / 2 + 40px)) 0; border-bottom: 1px solid var(--border); overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; scrollbar-width: none; position: sticky; top: 81px; z-index: 9; background: var(--bg); }
     .tabs::-webkit-scrollbar { display: none; }
     .tab { padding: 9px 18px; border-radius: 8px 8px 0 0; cursor: pointer; font-size: 0.82rem; font-weight: 500; color: var(--text-muted); border: 1px solid transparent; border-bottom: none; transition: all 0.2s; letter-spacing: 0.03em; position: relative; bottom: -1px; background: transparent; white-space: nowrap; }
     .tab:hover { color: var(--text); background: var(--surface2); }
     .tab.active { color: var(--accent); background: var(--surface); border-color: var(--border); border-bottom-color: var(--surface); }
-    main { padding: 32px 40px; max-width: 960px; }
+    main { width: min(100%, var(--page-max)); margin: 0 auto; padding: 36px 40px; }
     .panel { display: none; }
     .panel.active { display: block; animation: fadeIn 0.2s ease; }
     @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
@@ -96,7 +96,7 @@
     .form-field input:focus { border-color: var(--accent2); }
     .form-field input::placeholder { color: var(--text-dim); }
     .form-actions { display: flex; justify-content: flex-end; margin-top: 16px; }
-    .dinner-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(280px,1fr)); gap: 12px; }
+    .dinner-grid, #dinner-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(280px,1fr)); gap: 12px; }
 
     /* DINNER CARD */
     .dinner-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; display: flex; flex-direction: column; gap: 8px; transition: border-color 0.2s, opacity 0.2s; }
@@ -112,6 +112,7 @@
     .card-actions { display: flex; gap: 4px; align-items: center; flex-shrink: 0; }
     .card-footer { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 2px; justify-content: space-between; }
     .card-footer-left { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .week-badge { display: inline-flex; align-items: center; gap: 4px; width: fit-content; margin-top: 6px; background: rgba(232,196,122,0.1); border: 1px solid rgba(232,196,122,0.28); color: var(--accent); border-radius: 999px; padding: 3px 8px; font-size: 0.66rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
 
     /* EDIT FORM */
     .edit-form { display: flex; flex-direction: column; gap: 8px; }
@@ -138,16 +139,21 @@
     .week-info strong { color: var(--text); }
     .week-accent { color: var(--accent); }
     .week-plan { display: flex; flex-direction: column; gap: 8px; }
-    .week-day-wrap { animation: slideIn 0.3s ease both; }
+    .week-day-wrap { animation: slideIn 0.3s ease both; position: relative; }
     .week-day-wrap:nth-child(1){animation-delay:0s}.week-day-wrap:nth-child(2){animation-delay:.06s}.week-day-wrap:nth-child(3){animation-delay:.12s}.week-day-wrap:nth-child(4){animation-delay:.18s}.week-day-wrap:nth-child(5){animation-delay:.24s}
     @keyframes slideIn { from { opacity:0; transform:translateX(-10px); } to { opacity:1; transform:none; } }
-    .week-day { display: flex; align-items: center; gap: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 18px; transition: border-color 0.2s; }
+    @keyframes reorderBump { 0% { transform: translateY(0); } 45% { transform: translateY(8px); } 100% { transform: translateY(4px); } }
+    .week-day { display: flex; align-items: center; gap: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 18px; transition: border-color 0.2s, background 0.2s, transform 0.2s; }
     .week-day:hover { border-color: var(--text-dim); }
     .day-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-dim); font-weight: 500; min-width: 36px; }
     .day-divider { width: 1px; height: 28px; background: var(--border); flex-shrink: 0; }
     .day-note { font-size: 0.75rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px; }
     .day-note a { color: var(--accent2); text-decoration: none; }
     .day-actions { display: flex; gap: 4px; flex-shrink: 0; align-items: center; }
+    .drag-handle { display: none; }
+    .week-day-wrap.dragging { opacity: 0.45; }
+    .week-day-wrap.drag-over::before { content: ''; position: absolute; left: 18px; right: 18px; top: -6px; height: 2px; border-radius: 999px; background: var(--accent); box-shadow: 0 0 16px rgba(232,196,122,0.32); }
+    .week-day-wrap.drag-over .week-day { border-color: var(--accent2); background: var(--surface2); animation: reorderBump 0.28s ease both; }
     .day-meal { font-family: 'Playfair Display', serif; font-size: 1.05rem; color: var(--text); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }
     .day-meal:hover { color: var(--accent); }
 
@@ -236,6 +242,7 @@
     .empty-state { text-align: center; padding: 60px 20px; color: var(--text-dim); }
     .empty-state .icon { font-size: 2.5rem; margin-bottom: 12px; }
     .empty-state p { font-size: 0.9rem; line-height: 1.6; }
+    #dinner-grid .empty-state { grid-column: 1 / -1; }
     .loading { text-align: center; padding: 40px; color: var(--text-dim); font-size: 0.9rem; }
     .spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; margin-right: 6px; vertical-align: middle; }
     @keyframes spin { to { transform: rotate(360deg); } }
@@ -244,9 +251,47 @@
     .toast.show { opacity: 1; transform: none; }
     .toast.error { border-color: var(--danger); color: var(--danger); }
 
+    @media(min-width:900px){
+      body { background: linear-gradient(180deg, #12100d 0, var(--bg) 220px); }
+      header h1 { font-size: 2.15rem; }
+      .tab { padding: 10px 22px; }
+      .panel.active { animation-duration: 0.18s; }
+      .section-label { margin-bottom: 18px; }
+      .add-form { padding: 28px; margin-bottom: 24px; }
+      .form-row { display: grid; grid-template-columns: minmax(220px, 1.35fr) minmax(280px, 2fr) minmax(110px, 0.55fr); align-items: end; }
+      .form-field { min-width: 0; }
+      .form-actions { margin-top: 18px; }
+      .library-toolbar { display: grid; grid-template-columns: minmax(260px, 1fr) auto; gap: 12px; align-items: center; }
+      .search-wrap { min-width: 0; }
+      #dinner-grid { grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 16px; align-items: start; }
+      .dinner-card { min-height: 148px; padding: 18px 20px; }
+      .dinner-name { font-size: 1.08rem; }
+      .week-controls, .shop-controls { display: grid; grid-template-columns: minmax(320px, 1fr) auto auto; gap: 12px; }
+      .week-info, .shop-info { min-width: 0; }
+      .week-plan { gap: 10px; max-width: 900px; }
+      .week-day { padding: 16px 20px; }
+      .day-label { min-width: 42px; }
+      .day-note { max-width: 220px; }
+      .day-actions { gap: 8px; }
+      .week-day .day-actions .btn-icon { width: 42px; height: 42px; padding: 0; font-size: 1rem; display: inline-flex; align-items: center; justify-content: center; }
+      .week-day .day-actions .swap-btn { color: var(--accent2); font-size: 1.08rem; }
+      .week-day .day-actions .move-btn { display: none; }
+      .week-day .day-actions .drag-handle { display: inline-flex; cursor: grab; color: var(--text-muted); }
+      .week-day .day-actions .drag-handle:active { cursor: grabbing; }
+      .shop-groups { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; align-items: start; }
+      .history-list { max-width: 900px; }
+      .modal { box-shadow: 0 24px 80px rgba(0,0,0,0.38); }
+    }
+
+    @media(min-width:1200px){
+      #dinner-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .shop-groups { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+
     @media(max-width:640px){
       header{padding:16px 20px} main{padding:24px 16px} .tabs{padding:12px 16px 0} .tab{padding:8px 12px;font-size:0.78rem}
       .day-note{display:none} #setup-screen{margin:30px auto} .week-controls{gap:8px}
+      .week-badge{font-size:0.6rem;padding:2px 7px;margin-top:5px;letter-spacing:0.05em}
     }
   </style>
 </head>
@@ -371,6 +416,7 @@
   let ANT_KEY=localStorage.getItem(K_ANT)||'';
   let dinners=[], currentWeek=[], pickingIndex=-1, showFavOnly=false;
   let ingModalDinnerId=null, editingIngredients=[], editingCardId=null;
+  let draggingWeekIndex=null;
   let shopChecks=JSON.parse(localStorage.getItem(K_SHOP)||'{}');
 
   // Supabase
@@ -418,8 +464,9 @@
   function launchApp(){
     document.getElementById('setup-screen').style.display='none';
     document.getElementById('app').style.display='block';
-    loadDinners();loadWeek();
+    loadAppData();
   }
+  async function loadAppData(){await loadDinners();await loadWeek();}
 
   // Library
   async function loadDinners(){
@@ -494,6 +541,7 @@
     grid.innerHTML=list.map(d=>{
       const hasIng=d.ingredients&&d.ingredients.length>0;
       const isEditing=editingCardId===d.id;
+      const weekIndex=currentWeek.findIndex(w=>w.id===d.id);
       if(isEditing)return `<div class="dinner-card"><div class="edit-form">
         <div class="edit-field"><label>Name</label><input id="edit-name-${d.id}" value="${esc(d.name)}" maxlength="80"/></div>
         <div class="edit-field"><label>Note / Recipe Link</label><input id="edit-note-${d.id}" value="${esc(d.note||'')}"/></div>
@@ -504,7 +552,7 @@
         <div class="dinner-card-top">
           <div class="dinner-card-top-left">
             <button class="star-btn${d.is_favorite?' starred':''}" onclick="toggleFavorite('${d.id}')">${d.is_favorite?'★':'☆'}</button>
-            <div><div class="dinner-name">${esc(d.name)}</div>${d.servings?`<div class="dinner-meta">Serves ${d.servings}</div>`:''}</div>
+            <div><div class="dinner-name">${esc(d.name)}</div>${d.servings?`<div class="dinner-meta">Serves ${d.servings}</div>`:''}${weekIndex>=0?`<div class="week-badge">This week · ${DAYS[weekIndex]}</div>`:''}</div>
           </div>
           <div class="card-actions">
             <button class="btn-icon" onclick="startEdit('${d.id}')" title="Edit">✎</button>
@@ -649,7 +697,7 @@
     try{
       const rows=await sb('last_week','GET',null,'?id=eq.1');
       const ids=rows?.[0]?.dinner_ids||[];
-      currentWeek=ids.map(id=>dinners.find(d=>d.id===id)).filter(Boolean);renderWeek();
+      currentWeek=ids.map(id=>dinners.find(d=>d.id===id)).filter(Boolean);renderWeek();renderLibrary();
     }catch(e){}
   }
   async function generateWeek(){
@@ -665,7 +713,7 @@
       await sb('last_week','PATCH',{dinner_ids:picked.map(d=>d.id)},'?id=eq.1');
       await sb('week_history','POST',{meals:picked.map((d,i)=>({day:DAYS[i],id:d.id,name:d.name,note:d.note||null}))});
       currentWeek=picked;shopChecks={};localStorage.setItem(K_SHOP,JSON.stringify(shopChecks));
-      renderWeek();renderShop();showToast('New week generated ✦');loadHistoryBadge();
+      renderWeek();renderLibrary();renderShop();showToast('New week generated ✦');loadHistoryBadge();
     }catch(e){showToast('Error saving week',true);}
     btn.disabled=false;btn.textContent='✦ Generate Week';
   }
@@ -674,7 +722,7 @@
     const pool=dinners.filter(d=>!currentIds.has(d.id)&&!d.skip_generate);
     if(!pool.length){showToast('No other dinners available to swap in!');return;}
     currentWeek[idx]=pool[Math.floor(Math.random()*pool.length)];
-    await saveCurrentWeek();renderWeek();renderShop();showToast(`Swapped to "${currentWeek[idx].name}"`);
+    await saveCurrentWeek();renderWeek();renderLibrary();renderShop();showToast(`Swapped to "${currentWeek[idx].name}"`);
   }
   function openPickModal(idx){
     pickingIndex=idx;document.getElementById('modal-sub').textContent=`Replacing ${DAYS[idx]}`;
@@ -704,7 +752,7 @@
   async function pickDinner(id){
     if(pickingIndex<0)return;const dinner=dinners.find(d=>d.id===id);if(!dinner)return;
     currentWeek[pickingIndex]=dinner;closePickModal();
-    await saveCurrentWeek();renderWeek();renderShop();showToast(`Set to "${dinner.name}"`);
+    await saveCurrentWeek();renderWeek();renderLibrary();renderShop();showToast(`Set to "${dinner.name}"`);
   }
   async function saveCurrentWeek(){
     try{await sb('last_week','PATCH',{dinner_ids:currentWeek.map(d=>d.id)},'?id=eq.1');}
@@ -719,18 +767,19 @@
       info.innerHTML=`<strong>${dinners.filter(d=>!d.skip_generate).length}</strong> dinners available — need at least 5.`;
       copyBtn.style.display='none';return;
     }
-    info.innerHTML=`<strong class="week-accent">Mon–Fri</strong> is planned — swap any meal with 🔀 or pick manually.`;
+    info.innerHTML=`<strong class="week-accent">Mon–Fri</strong> is planned — swap any meal or pick manually.`;
     copyBtn.style.display='';
-    container.innerHTML=currentWeek.map((d,i)=>`<div class="week-day-wrap" data-idx="${i}">
+    container.innerHTML=currentWeek.map((d,i)=>`<div class="week-day-wrap" data-idx="${i}" ondragover="handleWeekDragOver(event,${i})" ondragleave="handleWeekDragLeave(event)" ondrop="handleWeekDrop(event,${i})">
       <div class="week-day">
         <div class="day-label">${DAYS[i]}</div>
         <div class="day-divider"></div>
         <div class="day-meal" onclick="jumpToMeal('${esc(d.name)}')">${esc(d.name)}${d.is_favorite?' <span style="font-size:0.75rem">⭐</span>':''}</div>
         <div class="day-actions">
-          <button class="btn-icon" onclick="randomReplace(${i})" title="Random swap">🔀</button>
+          <button class="btn-icon swap-btn" onclick="randomReplace(${i})" title="Random swap">⇄</button>
           <button class="btn-icon" onclick="openPickModal(${i})" title="Pick manually">≡</button>
-          <button class="btn-icon" onclick="moveDay(${i},-1)" title="Move up" ${i===0?'disabled':''}>↑</button>
-          <button class="btn-icon" onclick="moveDay(${i},1)" title="Move down" ${i===currentWeek.length-1?'disabled':''}>↓</button>
+          <button class="btn-icon drag-handle" draggable="true" ondragstart="handleWeekDragStart(event,${i})" ondragend="handleWeekDragEnd()" title="Drag to reorder">⋮⋮</button>
+          <button class="btn-icon move-btn" onclick="moveDay(${i},-1)" title="Move up" ${i===0?'disabled':''}>↑</button>
+          <button class="btn-icon move-btn" onclick="moveDay(${i},1)" title="Move down" ${i===currentWeek.length-1?'disabled':''}>↓</button>
         </div>
       </div>
     </div>`).join('');
@@ -738,7 +787,33 @@
   async function moveDay(idx,dir){
     const target=idx+dir;if(target<0||target>=currentWeek.length)return;
     [currentWeek[idx],currentWeek[target]]=[currentWeek[target],currentWeek[idx]];
-    await saveCurrentWeek();renderWeek();renderShop();showToast('Order saved ✦');
+    await saveCurrentWeek();renderWeek();renderLibrary();renderShop();showToast('Order saved ✦');
+  }
+  function handleWeekDragStart(e,idx){
+    draggingWeekIndex=idx;
+    e.dataTransfer.effectAllowed='move';
+    e.dataTransfer.setData('text/plain',String(idx));
+    document.querySelector(`.week-day-wrap[data-idx="${idx}"]`)?.classList.add('dragging');
+  }
+  function handleWeekDragOver(e,idx){
+    if(draggingWeekIndex===null||draggingWeekIndex===idx)return;
+    e.preventDefault();
+    e.currentTarget.classList.add('drag-over');
+  }
+  function handleWeekDragLeave(e){e.currentTarget.classList.remove('drag-over');}
+  async function handleWeekDrop(e,idx){
+    e.preventDefault();
+    document.querySelectorAll('.week-day-wrap').forEach(el=>el.classList.remove('drag-over','dragging'));
+    const from=draggingWeekIndex;
+    draggingWeekIndex=null;
+    if(from===null||from===idx)return;
+    const [moved]=currentWeek.splice(from,1);
+    currentWeek.splice(idx,0,moved);
+    await saveCurrentWeek();renderWeek();renderLibrary();renderShop();showToast('Order saved ✦');
+  }
+  function handleWeekDragEnd(){
+    draggingWeekIndex=null;
+    document.querySelectorAll('.week-day-wrap').forEach(el=>el.classList.remove('drag-over','dragging'));
   }
   function jumpToMeal(name){switchTab('library');document.getElementById('lib-search').value=name;renderLibrary();}
   function copyWeek(){
