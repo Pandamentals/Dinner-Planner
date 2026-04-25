@@ -99,19 +99,19 @@
     .dinner-grid, #dinner-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(280px,1fr)); gap: 12px; }
 
     /* DINNER CARD */
-    .dinner-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; display: flex; flex-direction: column; gap: 8px; transition: border-color 0.2s, opacity 0.2s; }
+    .dinner-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; display: flex; flex-direction: column; gap: 8px; height: 100%; transition: border-color 0.2s, opacity 0.2s; }
     .dinner-card:hover { border-color: var(--text-dim); }
     .dinner-card.is-favorite { border-color: rgba(232,196,122,0.3); }
     .dinner-card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 6px; }
     .dinner-card-top-left { display: flex; align-items: flex-start; gap: 6px; flex: 1; min-width: 0; }
     .dinner-title-wrap { flex: 1; min-width: 0; }
-    .dinner-name { font-family: 'Playfair Display', serif; font-size: 1rem; color: var(--text); line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
+    .dinner-name { font-family: 'Playfair Display', serif; font-size: 1rem; color: var(--text); line-height: 1.3; min-height: 2.6em; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
     .dinner-meta { font-size: 0.72rem; color: var(--text-dim); }
-    .dinner-note { font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; word-break: break-word; }
+    .dinner-note { font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; min-height: 2.35em; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; word-break: break-word; }
     .dinner-note a { color: var(--accent2); text-decoration: none; }
     .dinner-note a:hover { text-decoration: underline; }
     .card-actions { display: flex; gap: 4px; align-items: center; flex-shrink: 0; }
-    .card-footer { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 2px; justify-content: space-between; }
+    .card-footer { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: auto; justify-content: space-between; }
     .card-footer-left { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
     .week-badge { display: inline-flex; align-items: center; gap: 4px; width: fit-content; margin-top: 6px; background: rgba(232,196,122,0.1); border: 1px solid rgba(232,196,122,0.28); color: var(--accent); border-radius: 999px; padding: 3px 8px; font-size: 0.66rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
 
@@ -264,7 +264,7 @@
       .form-actions { margin-top: 18px; }
       .library-toolbar { display: grid; grid-template-columns: minmax(260px, 1fr) auto; gap: 12px; align-items: center; }
       .search-wrap { min-width: 0; }
-      #dinner-grid { grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 16px; align-items: start; }
+      #dinner-grid { grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 16px; align-items: stretch; }
       .dinner-card { min-height: 148px; padding: 18px 20px; }
       .dinner-name { font-size: 1.08rem; }
       .week-controls, .shop-controls { display: grid; grid-template-columns: minmax(320px, 1fr) auto auto; gap: 12px; }
@@ -411,6 +411,7 @@
 <script>
   const DAYS = ['Mon','Tue','Wed','Thu','Fri'];
   const K_URL='dp_sb_url', K_KEY='dp_sb_key', K_SHOP='dp_shop_checks', K_ANT='dp_ant_key';
+  const DEMO_MODE=new URLSearchParams(location.search).has('demo');
 
   let SB_URL=localStorage.getItem(K_URL)||'';
   let SB_KEY=localStorage.getItem(K_KEY)||'';
@@ -419,9 +420,32 @@
   let ingModalDinnerId=null, editingIngredients=[], editingCardId=null;
   let draggingWeekIndex=null;
   let shopChecks=JSON.parse(localStorage.getItem(K_SHOP)||'{}');
+  let demoHistory=[];
+
+  function makeDemoDinner(id,name,note,servings,is_favorite,ingredients,skip_generate=false){
+    return {id,name,note,servings,is_favorite,skip_generate,ingredients,created_at:new Date().toISOString()};
+  }
+  function seedDemoData(){
+    dinners=[
+      makeDemoDinner('demo-1','Lemon Herb Chicken Bowls', 'Use extra lemon zest and serve with rice.',4,true,['1.5 lb chicken thighs','2 lemons','1 cup jasmine rice','1 cucumber','Greek yogurt','Fresh dill']),
+      makeDemoDinner('demo-2','Miso Salmon with Broccoli and Sesame Scallion Rice', 'Weeknight favorite with a glossy miso glaze.',2,true,['2 salmon fillets','2 tbsp white miso','1 head broccoli','Soy sauce','Sesame oil','Scallions']),
+      makeDemoDinner('demo-3','Extra Long Sunday-Style Braised Short Rib Ragu with Pappardelle and Pecorino', 'Intentionally long title to test two-line clamping and card proportions.',6,false,['Short ribs','Pappardelle','Crushed tomatoes','Red wine','Pecorino','Carrots']),
+      makeDemoDinner('demo-4','Black Bean Tacos', 'Toast tortillas before serving.',3,false,['Corn tortillas','2 cans black beans','Avocado','Red cabbage','Lime','Cotija']),
+      makeDemoDinner('demo-5','Sheet-Pan Harissa Chicken with Roasted Cauliflower Chickpeas Herby Yogurt and Couscous', 'Another stress-test name with a short note.',4,true,['Chicken thighs','Harissa paste','Cauliflower','Chickpeas','Couscous','Plain yogurt']),
+      makeDemoDinner('demo-6','Thai Basil Beef', 'Keep the rice ready before cooking beef.',4,false,['1 lb ground beef','Thai basil','Garlic','Jasmine rice','Fish sauce','Green beans']),
+      makeDemoDinner('demo-7','Roasted Veggie Grain Bowls with Tahini Lemon Sauce and Crispy Spiced Chickpeas', 'Skip this when we have too many bowls.',4,false,['Farro','Sweet potatoes','Chickpeas','Tahini','Kale','Pumpkin seeds'],true),
+      makeDemoDinner('demo-8','Shrimp Fried Rice', 'Best with leftover rice.',3,true,['1 lb shrimp','3 cups cooked rice','Frozen peas','Eggs','Soy sauce','Ginger']),
+      makeDemoDinner('demo-9','Very Very Very Long Pantry Pasta Name That Should Never Stretch The Card Past The Grid Column', 'This one exists purely to catch overflow and asymmetry regressions in the library.',4,false,['Pasta','Garlic','Olive oil','Parmesan','Parsley'])
+    ];
+    currentWeek=dinners.filter(d=>!d.skip_generate).slice(0,5);
+    demoHistory=[
+      {id:'hist-1',created_at:new Date(Date.now()-7*24*60*60*1000).toISOString(),meals:currentWeek.map((d,i)=>({day:DAYS[i],id:d.id,name:d.name,note:d.note||null}))}
+    ];
+  }
 
   // Supabase
   async function sb(path,method='GET',body=null,qs='') {
+    if(DEMO_MODE)return demoSb(path,method,body,qs);
     const res=await fetch(`${SB_URL}/rest/v1/${path}${qs}`,{
       method,
       headers:{'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`,'Content-Type':'application/json','Prefer':method==='POST'?'return=representation':''},
@@ -429,6 +453,27 @@
     });
     if(!res.ok) throw new Error(await res.text());
     const t=await res.text(); return t?JSON.parse(t):null;
+  }
+  async function demoSb(path,method='GET',body=null,qs=''){
+    await new Promise(r=>setTimeout(r,80));
+    if(path==='dinners'){
+      if(method==='GET')return [...dinners];
+      if(method==='POST')return [{id:`demo-${Date.now()}`,...body,created_at:new Date().toISOString()}];
+      const id=qs.match(/id=eq\.([^&]+)/)?.[1];
+      const row=dinners.find(d=>d.id===id);
+      if(!row)return null;
+      if(method==='PATCH')return [{...row,...body}];
+      return null;
+    }
+    if(path==='last_week'){
+      if(method==='GET')return [{id:1,dinner_ids:currentWeek.map(d=>d.id)}];
+      if(method==='PATCH'){currentWeek=(body.dinner_ids||[]).map(id=>dinners.find(d=>d.id===id)).filter(Boolean);return null;}
+    }
+    if(path==='week_history'){
+      if(method==='GET')return qs.includes('select=id')?demoHistory.map(h=>({id:h.id})):[...demoHistory];
+      if(method==='POST'){demoHistory.unshift({id:`hist-${Date.now()}`,created_at:new Date().toISOString(),...body});return [demoHistory[0]];}
+    }
+    return null;
   }
 
   // Setup
@@ -461,13 +506,21 @@
     }
   }
   function resetSetup(){if(!confirm('Change connection settings?'))return;showSetup();}
-  window.addEventListener('DOMContentLoaded',()=>{if(SB_URL&&SB_KEY)launchApp();else showSetup();});
+  window.addEventListener('DOMContentLoaded',()=>{if(DEMO_MODE)launchDemo();else if(SB_URL&&SB_KEY)launchApp();else showSetup();});
   function launchApp(){
     document.getElementById('setup-screen').style.display='none';
     document.getElementById('app').style.display='block';
     loadAppData();
   }
   async function loadAppData(){await loadDinners();await loadWeek();}
+  function launchDemo(){
+    seedDemoData();
+    document.getElementById('setup-screen').style.display='none';
+    document.getElementById('app').style.display='block';
+    document.querySelector('header .sub').textContent='layout stress preview';
+    renderLibrary();renderWeek();renderShop();loadHistoryBadge();
+    showToast('Demo preview loaded');
+  }
 
   // Library
   async function loadDinners(){
