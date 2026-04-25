@@ -11,7 +11,7 @@
       --bg: #0f0e0c; --surface: #1a1815; --surface2: #242118; --border: #2e2b24;
       --accent: #e8c47a; --accent2: #c4a25a; --text: #f0ebe0;
       --text-muted: #7a7060; --text-dim: #4a4438; --danger: #c46060;
-      --star: #e8c47a; --radius: 12px; --page-max: 1180px;
+      --star: #e8c47a; --radius: 12px; --page-max: 1320px;
     }
     body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 0 0 80px; }
 
@@ -104,7 +104,8 @@
     .dinner-card.is-favorite { border-color: rgba(232,196,122,0.3); }
     .dinner-card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 6px; }
     .dinner-card-top-left { display: flex; align-items: flex-start; gap: 6px; flex: 1; min-width: 0; }
-    .dinner-name { font-family: 'Playfair Display', serif; font-size: 1rem; color: var(--text); line-height: 1.3; }
+    .dinner-title-wrap { flex: 1; min-width: 0; }
+    .dinner-name { font-family: 'Playfair Display', serif; font-size: 1rem; color: var(--text); line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
     .dinner-meta { font-size: 0.72rem; color: var(--text-dim); }
     .dinner-note { font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; word-break: break-word; }
     .dinner-note a { color: var(--accent2); text-decoration: none; }
@@ -263,7 +264,7 @@
       .form-actions { margin-top: 18px; }
       .library-toolbar { display: grid; grid-template-columns: minmax(260px, 1fr) auto; gap: 12px; align-items: center; }
       .search-wrap { min-width: 0; }
-      #dinner-grid { grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 16px; align-items: start; }
+      #dinner-grid { grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 16px; align-items: start; }
       .dinner-card { min-height: 148px; padding: 18px 20px; }
       .dinner-name { font-size: 1.08rem; }
       .week-controls, .shop-controls { display: grid; grid-template-columns: minmax(320px, 1fr) auto auto; gap: 12px; }
@@ -552,7 +553,7 @@
         <div class="dinner-card-top">
           <div class="dinner-card-top-left">
             <button class="star-btn${d.is_favorite?' starred':''}" onclick="toggleFavorite('${d.id}')">${d.is_favorite?'★':'☆'}</button>
-            <div><div class="dinner-name">${esc(d.name)}</div>${d.servings?`<div class="dinner-meta">Serves ${d.servings}</div>`:''}${weekIndex>=0?`<div class="week-badge">This week · ${DAYS[weekIndex]}</div>`:''}</div>
+            <div class="dinner-title-wrap"><div class="dinner-name" title="${esc(d.name)}">${esc(d.name)}</div>${d.servings?`<div class="dinner-meta">Serves ${d.servings}</div>`:''}${weekIndex>=0?`<div class="week-badge">This week · ${DAYS[weekIndex]}</div>`:''}</div>
           </div>
           <div class="card-actions">
             <button class="btn-icon" onclick="startEdit('${d.id}')" title="Edit">✎</button>
